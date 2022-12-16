@@ -1,0 +1,25 @@
+{
+    "type": "action.devices.types.SWITCH",
+    "traits": [
+        "action.devices.traits.OnOff"
+    ],
+    "name": {
+        "name": "MagicMirror",
+        "defaultNames": [
+          "Mirror",
+          "MagicMirror"
+        ],
+        "nicknames": [
+          "MagicMirror",
+          "Mirror"
+        ]
+    },
+    "willReportState": false,
+    "roomHint": "My_Testing_Room",
+    "deviceInfo": {
+        "manufacturer": "bugsounet",
+        "model": "MagicMirror\u00b2",
+        "hwVersion": "1",
+        "swVersion": "1"
+    }
+}
