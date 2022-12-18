@@ -1,7 +1,8 @@
 {
-    "type": "action.devices.types.SWITCH",
+    "type": "action.devices.types.TV",
     "traits": [
-        "action.devices.traits.OnOff"
+        "action.devices.traits.OnOff",
+        "action.devices.traits.Volume"
     ],
     "name": {
         "name": "MagicMirror",

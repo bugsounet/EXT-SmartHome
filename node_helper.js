@@ -64,11 +64,11 @@ module.exports = NodeHelper.create({
       .use(express.json())
 
       /** OAuth2 Server **/
-      .get("/auth", (req,res) => {
+      .get("/auth/", (req,res) => {
         res.sendFile(this.websiteDir+ "login.html")
       })
       
-      .post("/auth", (req,res) => {
+      .post("/auth/", (req,res) => {
         let form = req.body
         let args = req.query
         if (form["username"] && form["password"] && args["state"] && args["response_type"] && args["response_type"] == "code" && args["client_id"] == this.config.CLIENT_ID){
@@ -84,24 +84,30 @@ module.exports = NodeHelper.create({
             'code': this.last_code,
             'client_id': this.config.CLIENT_ID
           }
+          log("generate Code", this.last_code)
+          log("params:", params)
+          log("link:", args["redirect_uri"] + this.serialize(params))
           res.status(301).redirect(args["redirect_uri"] + this.serialize(params))
         } else {
           res.status(400).send("Invalid request")
         }
       })
       
-      .post("/token", (req,res) => {
+      .post("/token/", (req,res) => {
         let form = req.body
         if (form["grant_type"] && form["grant_type"] == "authorization_code" && form["code"] && form["code"] == this.last_code) {
           let time = (new Date()).getTime() / 1000
           if (time - this.last_code_time > 10) {
+            log("Invalid code (timeout)")
             res.status(403).send("Invalid code")
           } else {
             let access_token = this.random_string(32)
             fs.writeFileSync(this.tokensDir + access_token, this.last_code_user, { encoding: "utf8"} )
+            log("Send Token:", {"access_token": access_token})
             res.json({"access_token": access_token})
           }
         } else {
+          log("Invalid code")
           res.status(403).send("Invalid code")
         }
       })
@@ -123,13 +129,16 @@ module.exports = NodeHelper.create({
         let inputs = r["inputs"]
         await inputs.reduce(async (ref, input) => {
           let intent = input["intent"]
+          log("Intent:", intent)
           if (intent == "action.devices.SYNC") {
             log("Request SYNC...")
             result['payload'] = {"agentUserId": user_id, "devices": []}
             let user = this.get_user(user_id)
             await user['devices'].reduce(async (ref, device_id) => {
               let device = this.get_device(device_id)
-              result['payload']['devices'] = device
+              log("device:", device, device.id)
+              result['payload']['devices'].push(device)
+              log("result:", result)
             },Promise.resolve())
             log("ENDED: Request SYNC...")
           }
@@ -170,7 +179,7 @@ module.exports = NodeHelper.create({
                     let params = exec.hasOwnProperty("params") ? exec.params : null
                     let action_result = deviceModule.action(custom_data, comm, params, this._Callbacks.screen)
                     action_result['ids'] = [device_id]
-                    result['payload']['commands'] = action_result
+                    result['payload']['commands'].push(action_result)
                   },Promise.resolve())
                 } catch (e) { console.error(e) }
               },Promise.resolve())
@@ -243,6 +252,7 @@ module.exports = NodeHelper.create({
   },
   
   get_token: function(headers) {
+    if (!headers) return null
     const auth = headers.authorization
     let parts = auth.split(" ",2)
     if (auth && parts.length == 2 && parts[0].toLowerCase() == 'bearer') {
