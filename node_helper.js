@@ -31,6 +31,18 @@ module.exports = NodeHelper.create({
       screen: (state) => {
         log("callback screen:", state)
         this.sendSocketNotification("SCREEN", state)
+      },
+      volume: (level) => {
+        log("volume:", level)
+        this.sendSocketNotification("VOLUME", level)
+      },
+      volumeUp: () => {
+        log("volume Up")
+        this.sendSocketNotification("VOLUME-UP")
+      },
+      volumeDown: () => {
+        log("volume Down")
+        this.sendSocketNotification("VOLUME-DOWN")
       }
     }
     this.characters ='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
@@ -101,7 +113,7 @@ module.exports = NodeHelper.create({
           log("link:", args["redirect_uri"] + this.serialize(params))
           res.status(301).redirect(args["redirect_uri"] + this.serialize(params))
         } else {
-          res.status(400).send("Invalid request")
+          res.status(400).sendFile(this.websiteDir+ "400.html")
         }
       })
       
@@ -111,7 +123,7 @@ module.exports = NodeHelper.create({
           let time = (new Date()).getTime() / 1000
           if (time - this.last_code_time > 10) {
             log("Invalid code (timeout)")
-            res.status(403).send("Invalid code")
+            res.status(403).sendFile(this.websiteDir+ "403.html")
           } else {
             let access_token = this.random_string(32)
             fs.writeFileSync(this.tokensDir + access_token, this.last_code_user, { encoding: "utf8"} )
@@ -120,7 +132,7 @@ module.exports = NodeHelper.create({
           }
         } else {
           log("Invalid code")
-          res.status(403).send("Invalid code")
+          res.status(403).sendFile(this.websiteDir+ "403.html")
         }
       })
 
@@ -189,7 +201,7 @@ module.exports = NodeHelper.create({
                   await command['execution'].reduce(async (ref, exec) => {
                     let comm = exec['command']
                     let params = exec.hasOwnProperty("params") ? exec.params : null
-                    let action_result = deviceModule.action(custom_data, comm, params, this._Callbacks.screen)
+                    let action_result = deviceModule.action(custom_data, comm, params, this._Callbacks)
                     action_result['ids'] = [device_id]
                     result['payload']['commands'].push(action_result)
                   },Promise.resolve())
@@ -213,9 +225,9 @@ module.exports = NodeHelper.create({
         res.json(result)
       })      
 
-     .use(function(req, res) {
+     .use((req, res) => {
         console.warn("[SMARTHOME] Don't find:", req.url, req.body)
-        res.status(404).send("Page not found!")
+        res.status(404).sendFile(this.websiteDir+ "404.html")
       })
     this.server.listen(this.config.port, "127.0.0.1", async () => {
       console.log("[SMARTHOME] Start listening on http://127.0.0.1:"+this.config.port) 
@@ -298,6 +310,9 @@ module.exports = NodeHelper.create({
         break
       case "SCREEN":
         this.SmartHome.Screen = payload
+        break
+      case "VOLUME":
+        this.SmartHome.Volume = payload
         break
     }
   }

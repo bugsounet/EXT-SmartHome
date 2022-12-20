@@ -37,6 +37,9 @@ Module.register("EXT-SmartHome", {
       case "EXT_SCREEN-OFF":
         this.sendSocketNotification("SCREEN","OFF")
         break
+      case "EXT_VOLUME-SPEAKER_GET":
+        this.sendSocketNotification("VOLUME", payload)
+        break
     }
   },
 
@@ -45,6 +48,15 @@ Module.register("EXT-SmartHome", {
       case "SCREEN":
         if (payload == "ON") this.sendNotification("EXT_SCREEN-WAKEUP")
         if (payload == "OFF") this.sendNotification("EXT_SCREEN-END")
+        break
+      case "VOLUME":
+        this.sendNotification("EXT_VOLUME-SPEAKER_SET", payload)
+        break
+      case "VOLUME-UP":
+        this.sendNotification("EXT_VOLUME-SPEAKER_UP", payload)
+        break
+      case "VOLUME-DOWN":
+        this.sendNotification("EXT_VOLUME-SPEAKER_DOWN", payload)
         break
     }
   }
