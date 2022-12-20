@@ -56,9 +56,21 @@ module.exports = NodeHelper.create({
   },
 
   Setup: function() {
+    var options = {
+      dotfiles: 'ignore',
+      etag: false,
+      extensions: ["css", "js"],
+      index: false,
+      maxAge: '1d',
+      redirect: false,
+      setHeaders: function (res, path, stat) {
+        res.set('x-timestamp', Date.now());
+      }
+    }
     this.app
       .use(this.logRequest)
       .use('/css', express.static(this.websiteDir))
+      .use('/assets', express.static(this.websiteDir + 'assets', options))
       .use(bodyParser.json())
       .use(bodyParser.urlencoded({ extended: true }))
       .use(express.json())
@@ -114,7 +126,7 @@ module.exports = NodeHelper.create({
 
       /** fulfillment Server **/
       .get("/", (req,res) => {
-        res.send("[EXT-SmartHome] Your smart home server is ready.")
+        res.sendFile(this.websiteDir+ "works.html")
       })
 
       .post("/", async (req,res) => {
