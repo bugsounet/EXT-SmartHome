@@ -3,13 +3,14 @@
 *  Bugsounet              *
 *  12/2022                *
 ***************************/
+"use strict"
 
 var log = () => { /* do nothing */ }
 
 var express = require("express")
 const http = require('http')
 const bodyParser = require('body-parser')
-
+var _ = require('lodash')
 const fs = require("fs")
 const path = require("path")
 
@@ -27,6 +28,7 @@ module.exports = NodeHelper.create({
       Volume : 100,
       Page: 0
     }
+    this.oldSmartHome = {}
     this._Callbacks = {
       screen: (state) => {
         log("callback screen:", state)
@@ -308,12 +310,34 @@ module.exports = NodeHelper.create({
       case "INIT":
         this.initialize(payload)
         break
-      case "SCREEN":
-        this.SmartHome.Screen = payload
-        break
-      case "VOLUME":
-        this.SmartHome.Volume = payload
+      //case "SCREEN":
+      //  this.SmartHome.Screen = payload
+      //  break
+      //case "VOLUME":
+      //  this.SmartHome.Volume = payload
+      //  break
+      case "GATEWAYDB":
+        this.refreshDB(payload)
         break
     }
+  },
+
+  refreshDB: function(data) {
+    this.oldSmartHome = {
+      Screen: this.SmartHome.Screen,
+      Volume: this.SmartHome.Volume,
+      Page: 0
+    }
+
+    this.SmartHome.Screen = (data["EXT-Screen"].power == true) ? "ON" : "OFF"
+    this.SmartHome.Volume = data["EXT-Volume"].speaker
+    this.updateGraph()
+  },
+
+  updateGraph: function() {
+     if (!_.isEqual(this.SmartHome, this.oldSmartHome)) {
+      log("Change detected... @toCode: Send notification to Google homegraph server")
+    }
+
   }
 })

@@ -5,28 +5,24 @@
         "action.devices.traits.Volume"
     ],
     "name": {
-        "name": "MagicMirror",
+        "name": "Jarvis",
         "defaultNames": [
           "Mirror",
-          "MagicMirror"
+          "MagicMirror",
+          "Jarvis"
         ],
         "nicknames": [
           "MagicMirror",
-          "Mirror"
+          "Mirror",
+          "Jarvis"
         ]
     },
     "willReportState": false,
     "roomHint": "My_Testing_Room",
-    "attributes": {
-      "volumeMaxLevel": 100,
-      "volumeCanMuteAndUnmute": false,
-      "levelStepSize": 5,
-      "commandOnlyVolume": false,
-      "volumeDefaultPercentage": 100
-    },
     "deviceInfo": {
-        "manufacturer": "bugsounet",
-        "model": "MagicMirror\u00b2",
+        "manufacturer": "@bugsounet",
+        "model": "MMM-GoogleAssistant",
+        "description": "Google Assistant SDK for MagicMirror²"
         "hwVersion": "1",
         "swVersion": "1"
     }

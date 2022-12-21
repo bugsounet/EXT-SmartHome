@@ -3,7 +3,6 @@
 
 export const query = (data) => {
   let Result = false
-  console.log("query data:", data)
   if (data["Screen"] == "ON") {
     Result = true
   }
@@ -15,7 +14,7 @@ export const action = (data, command, params, callback) => {
     if (params['on']) callback.screen("ON")
     else callback.screen("OFF")
 
-    return {"status": "SUCCESS", "states": {"on": params['on'], "online": true, "volumeLevel": 11}}
+    return {"status": "SUCCESS", "states": {"on": params['on'], "online": true}}
   } else if (command == "action.devices.commands.volumeRelative") {
     let level = 0
     if (params.volumeRelativeLevel > 0) {

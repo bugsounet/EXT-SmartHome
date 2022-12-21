@@ -1,6 +1,6 @@
 {
     "password": "test",
     "devices": [
-        "MagicMirror"
+        "MMM-GoogleAssistant"
     ]
 }

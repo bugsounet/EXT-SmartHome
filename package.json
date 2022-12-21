@@ -20,5 +20,8 @@
   "bugs": {
     "url": "https://forum.bugsounet.fr"
   },
-  "homepage": "https://wiki.bugsounet.fr"
+  "homepage": "https://wiki.bugsounet.fr",
+  "dependencies": {
+    "lodash": "^4.17.21"
+  }
 }

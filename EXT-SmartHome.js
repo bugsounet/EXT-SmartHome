@@ -40,14 +40,24 @@ Module.register("EXT-SmartHome", {
       case "EXT_VOLUME-SPEAKER_GET":
         this.sendSocketNotification("VOLUME", payload)
         break
+      case "EXT_GATEWAY-STATUS":
+        this.sendSocketNotification("GATEWAYDB", payload)
+        break
     }
   },
 
   socketNotificationReceived: function(noti, payload) {
     switch(noti) {
       case "SCREEN":
-        if (payload == "ON") this.sendNotification("EXT_SCREEN-WAKEUP")
-        if (payload == "OFF") this.sendNotification("EXT_SCREEN-END")
+        if (payload == "ON") {
+          this.sendNotification("EXT_SCREEN-FORCE_UNLOCK")
+          this.sendNotification("EXT_SCREEN-WAKEUP")
+        }
+        if (payload == "OFF") {
+          this.sendNotification("EXT_SCREEN-FORCE_UNLOCK")
+          this.sendNotification("EXT_SCREEN-END")
+          setTimeout(() => { this.sendNotification("EXT_SCREEN-FORCE_LOCK") } , 1000)
+        }
         break
       case "VOLUME":
         this.sendNotification("EXT_VOLUME-SPEAKER_SET", payload)
