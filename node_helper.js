@@ -60,13 +60,113 @@ module.exports = NodeHelper.create({
       log = (...args) => { console.log("[SMARTHOME]", ...args) }
     }
     console.log("[SMARTHOME] Start app...")
-    this.devicesDir = __dirname + "/database/devices/"
-    this.tokensDir= __dirname + "/database/tokens/"
-    this.usersDir= __dirname + "/database/users/"
+    this.tokensDir= __dirname + "/tokens/"
     this.websiteDir = __dirname + "/website/"
+    this.user = {}
+    this.device = {}
     this.app = express()
     this.server = http.createServer(this.app)
+    this.setData()
     this.Setup()
+  },
+
+  setData: function() {
+    this.user = {
+      "password": this.config.password,
+      "devices": [
+          "MMM-GoogleAssistant"
+      ]
+    }
+    this.device = {
+      "type": "action.devices.types.TV",
+      "traits": [
+          "action.devices.traits.OnOff",
+          "action.devices.traits.Volume",
+          "action.devices.traits.InputSelector"
+      ],
+      "name": {
+          "name": "Jarvis",
+          "defaultNames": [
+            "Mirror",
+            "MagicMirror",
+            "Jarvis"
+          ],
+          "nicknames": [
+            "Jarvis",
+            "MagicMirror",
+            "Mirror"
+          ]
+      },
+      "attributes": {
+        "availableInputs": [
+          {
+            "key": "page 0",
+            "names": [
+              {
+                "lang": "en",
+                "name_synonym": [
+                  "page 0"
+                ]
+              }
+            ]
+          },
+          {
+            "key": "page 1",
+            "names": [
+              {
+                "lang": "en",
+                "name_synonym": [
+                  "page 1"
+                ]
+              }
+            ]
+          }
+        ],
+        "orderedInputs": true,
+        "volumeMaxLevel": 100,
+        "volumeDefaultPercentage": 100,
+        "levelStepSize": 5
+      },
+      "willReportState": false,
+      "roomHint": "MMM-GoogleAssistant",
+      "deviceInfo": {
+          "manufacturer": "@bugsounet",
+          "model": "MMM-GoogleAssistant",
+          "hwVersion": "1",
+          "swVersion": "1"
+      }
+    }
+    this.query = (data) => {
+      let Result = false
+      if (data["Screen"] == "ON") {
+        Result = true
+      }
+      return {"on": Result, "online": true, "volumeLevel": data.Volume}
+    }
+    this.execute = (data, command, params, callback) => {
+      if (command == "action.devices.commands.OnOff") {
+        if (params['on']) callback.screen("ON")
+        else callback.screen("OFF")
+        return {"status": "SUCCESS", "states": {"on": params['on'], "online": true}}
+      } else if (command == "action.devices.commands.volumeRelative") {
+        let level = 0
+        if (params.volumeRelativeLevel > 0) {
+          level = data.Volume +5
+          if (level > 100) level = 100
+          callback.volumeUp()
+        } else {
+          level = data.Volume -5
+          if (level < 0) level = 0
+          callback.volumeDown()
+        }
+        return {"status": "SUCCESS", "states": {"online": true, "volumeLevel": level}}
+      } else if (command == "action.devices.commands.setVolume") {
+        callback.volume(params.volumeLevel)
+        return {"status": "SUCCESS", "states": {"online": true, "volumeLevel": params.volumeLevel}}
+      } else {
+        return {"status": "ERROR"}
+      }
+    }
   },
 
   Setup: function() {
@@ -78,7 +178,7 @@ module.exports = NodeHelper.create({
       maxAge: '1d',
       redirect: false,
       setHeaders: function (res, path, stat) {
-        res.set('x-timestamp', Date.now());
+        res.set('x-timestamp', Date.now())
       }
     }
     this.app
@@ -99,7 +199,8 @@ module.exports = NodeHelper.create({
         let args = req.query
         if (form["username"] && form["password"] && args["state"] && args["response_type"] && args["response_type"] == "code" && args["client_id"] == this.config.CLIENT_ID){
           let user = this.get_user(form["username"])
-          if (!user || user["password"] != form["password"]) {
+          console.log(user, this.user, form["password"])
+          if (!user || this.user.password != form["password"]) {
             return res.sendFile(this.websiteDir+ "login.html")
           }
           this.last_code = this.random_string(8)
@@ -177,11 +278,8 @@ module.exports = NodeHelper.create({
               log("device_id:", device_id)
               let custom_data = device.hasOwnProperty("customData") ? device.customData : this.SmartHome
               log("custom_data:", custom_data)
-              log("Loading:", this.devicesDir + device_id+ ".mjs")
               try {
-                let deviceModule = await import(this.devicesDir + device_id+ ".mjs")
-                log("Loaded!")
-                result['payload']['devices'][device_id] = deviceModule.query(custom_data)
+                result['payload']['devices'][device_id] = this.query(custom_data)
               } catch (e) { console.error(e) }
             },Promise.resolve())
             log("ENDED: Request QUERY...")
@@ -195,15 +293,11 @@ module.exports = NodeHelper.create({
                 let device_id = device['id']
                 log("device_id:", device_id)
                 let custom_data = device.hasOwnProperty("customData") ? device.customData : this.SmartHome
-                log("custom_data:", custom_data)
-                log("Loading:", this.devicesDir + device_id+ ".mjs")
                 try {
-                  let deviceModule = await import(this.devicesDir + device_id+ ".mjs")
-                  log("Loaded!")
                   await command['execution'].reduce(async (ref, exec) => {
                     let comm = exec['command']
                     let params = exec.hasOwnProperty("params") ? exec.params : null
-                    let action_result = deviceModule.action(custom_data, comm, params, this._Callbacks)
+                    let action_result = this.execute(custom_data, comm, params, this._Callbacks)
                     action_result['ids'] = [device_id]
                     result['payload']['commands'].push(action_result)
                   },Promise.resolve())
@@ -214,7 +308,7 @@ module.exports = NodeHelper.create({
           }
           if (intent == "action.devices.DISCONNECT") {
             log("Request DISCONNECT...")
-            let access_token = this.get_token()
+            let access_token = this.get_token(Headers)
             if (fs.existsSync(this.tokensDir + access_token)) {
               fs.unlinkSync(this.tokensDir + access_token)
               log("Deleted:", access_token)
@@ -232,7 +326,7 @@ module.exports = NodeHelper.create({
         res.status(404).sendFile(this.websiteDir+ "404.html")
       })
     this.server.listen(this.config.port, "127.0.0.1", async () => {
-      console.log("[SMARTHOME] Start listening on http://127.0.0.1:"+this.config.port) 
+      console.log("[SMARTHOME] Start listening on http://127.0.0.1:"+this.config.port)
     })
   },
 
@@ -243,19 +337,17 @@ module.exports = NodeHelper.create({
   },
 
   get_user: function(username) {
-     if (fs.existsSync(this.usersDir + username + ".json")) {
-       let user = fs.readFileSync(this.usersDir + username + ".json", 'utf8')
-       return JSON.parse(user)
-     } else {
-       return null
-     }
+    if (username == this.config.username) {
+      return this.user
+    } else {
+      return null
+    }
   },
 
   get_device: function(device_id) {
-    if (fs.existsSync(this.devicesDir + device_id + ".json")) {
-      let data = {}
-      let device = fs.readFileSync(this.devicesDir + device_id + ".json", 'utf8')
-      data = JSON.parse(device)
+    log("get_device", device_id)
+    if (device_id == "MMM-GoogleAssistant") {
+      let data = this.device
       data["id"] = device_id
       return data
     } else {
@@ -310,12 +402,6 @@ module.exports = NodeHelper.create({
       case "INIT":
         this.initialize(payload)
         break
-      //case "SCREEN":
-      //  this.SmartHome.Screen = payload
-      //  break
-      //case "VOLUME":
-      //  this.SmartHome.Volume = payload
-      //  break
       case "GATEWAYDB":
         this.refreshDB(payload)
         break

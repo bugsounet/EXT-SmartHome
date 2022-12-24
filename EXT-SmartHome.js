@@ -7,14 +7,12 @@
 Module.register("EXT-SmartHome", {
   defaults: {
     debug: false,
+    username: "MagicMirror",
+    password: "admin",
     CLIENT_ID: null,
     CLIENT_SECRET: null,
     API_KEY: null,
     port: 5000
-  },
-
-  start: function() {
-
   },
 
   getDom: function() {
@@ -30,15 +28,6 @@ Module.register("EXT-SmartHome", {
         break
       case "GAv4_READY": // send HELLO to Gateway ... (mark plugin as present in GW db)
         if (sender.name == "MMM-GoogleAssistant") this.sendNotification("EXT_HELLO", this.name)
-        break
-      case "EXT_SCREEN-ON":
-        this.sendSocketNotification("SCREEN","ON")
-        break
-      case "EXT_SCREEN-OFF":
-        this.sendSocketNotification("SCREEN","OFF")
-        break
-      case "EXT_VOLUME-SPEAKER_GET":
-        this.sendSocketNotification("VOLUME", payload)
         break
       case "EXT_GATEWAY-STATUS":
         this.sendSocketNotification("GATEWAYDB", payload)
