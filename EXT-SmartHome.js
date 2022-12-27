@@ -57,6 +57,15 @@ Module.register("EXT-SmartHome", {
       case "VOLUME-DOWN":
         this.sendNotification("EXT_VOLUME-SPEAKER_DOWN", payload)
         break
+      case "SET-PAGE":
+        this.sendNotification("EXT_PAGES-CHANGED", payload)
+        break
+      case "SET-NEXT-PAGE":
+        this.sendNotification("EXT_PAGES-INCREMENT")
+        break
+      case "SET-PREVIOUS-PAGE":
+        this.sendNotification("EXT_PAGES-DECREMENT")
+        break
     }
   }
 });
