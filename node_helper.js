@@ -42,6 +42,9 @@ module.exports = NodeHelper.create({
       setPreviousPage: () => {
         log("setPreviousPage")
         this.sendSocketNotification("SET-PREVIOUS-PAGE")
+      },
+      Alert: (alert) => {
+        this.sendSocketNotification("ALERT", alert)
       }
     }
   },

@@ -1,9 +1,9 @@
 {
   "name": "EXT-SmartHome",
   "version": "1.0.0",
-  "rev": "221227",
+  "rev": "221231",
   "description": "SmartHome for MagicMirror²",
-  "main": "EXT-SelfiesSender.js",
+  "main": "EXT-SmartHome.js",
   "scripts": {
     "preinstall": "installer/preinstall.sh",
     "postinstall": "installer/postinstall.sh",
@@ -22,7 +22,8 @@
   },
   "homepage": "https://wiki.bugsounet.fr",
   "dependencies": {
+    "actions-on-google": "^3.0.0",
+    "googleapis": "^110.0.0",
     "lodash": "^4.17.21",
-    "node-fetch": "^3.3.0"
   }
 }

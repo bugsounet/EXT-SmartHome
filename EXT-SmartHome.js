@@ -11,7 +11,6 @@ Module.register("EXT-SmartHome", {
     password: "admin",
     CLIENT_ID: null,
     CLIENT_SECRET: null,
-    API_KEY: null,
     port: 5000
   },
 
@@ -65,6 +64,13 @@ Module.register("EXT-SmartHome", {
         break
       case "SET-PREVIOUS-PAGE":
         this.sendNotification("EXT_PAGES-DECREMENT")
+        break
+      case "ALERT":
+        this.sendNotification("EXT_ALERT", {
+          message: payload,
+          type: "warning",
+          timer: 10000
+        })
         break
     }
   }
