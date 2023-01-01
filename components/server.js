@@ -46,7 +46,9 @@ class SMARTHOME {
     }
     this.device = {
       "type": "action.devices.types.TV",
-      "traits": [],
+      "traits": [
+        "action.devices.traits.Reboot"
+      ],
       "name": {
           "name": "Jarvis",
           "defaultNames": [
@@ -362,7 +364,7 @@ class SMARTHOME {
   /** Tools **/
   logRequest(req, res, next) {
     var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress
-    log("[" + ip + "][" + req.method + "] " + req.url)
+    console.log("[" + ip + "][" + req.method + "] " + req.url)
     next()
   }
 
@@ -414,6 +416,9 @@ class SMARTHOME {
       log("PreviousInput", params)
       callback.setPreviousPage()
       return {"status": "SUCCESS", "states": { "online": true }}
+    } else if (command == "action.devices.commands.Reboot") {
+      callback.Reboot()
+      return {}
     } else {
       return {"status": "ERROR"}
     }

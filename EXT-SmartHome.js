@@ -72,6 +72,9 @@ Module.register("EXT-SmartHome", {
           timer: 10000
         })
         break
+      case "REBOOT":
+        this.sendNotification("EXT_GATEWAY-REBOOT")
+        break
     }
   }
 });
