@@ -75,6 +75,14 @@ Module.register("EXT-SmartHome", {
       case "REBOOT":
         this.sendNotification("EXT_GATEWAY-REBOOT")
         break
+      case "LOCATE":
+        this.sendNotification("EXT_ALERT", {
+          message: "Hey, I'm here !",
+          type: "information",
+          sound: "modules/EXT-SmartHome/components/locator.mp3",
+          timer: 19000
+        })
+        break
     }
   }
 });

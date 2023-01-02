@@ -48,6 +48,9 @@ module.exports = NodeHelper.create({
       },
       Reboot: () => {
         this.sendSocketNotification("REBOOT")
+      },
+      Locate: () => {
+        this.sendSocketNotification("LOCATE")
       }
     }
   },

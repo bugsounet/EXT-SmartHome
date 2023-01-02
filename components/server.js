@@ -47,7 +47,8 @@ class SMARTHOME {
     this.device = {
       "type": "action.devices.types.TV",
       "traits": [
-        "action.devices.traits.Reboot"
+        "action.devices.traits.Reboot",
+        "action.devices.traits.Locator"
       ],
       "name": {
           "name": "Jarvis",
@@ -283,7 +284,10 @@ class SMARTHOME {
       }
       const res = await this.homegraph.devices.requestSync(body)
       console.log("[SMARTHOME] [requestSync] Done.", res.data, res.status, res.statusText)
-    } catch (e) { console.error("[SMARTHOME] [requestSync] Error:", e.code ? e.code : e, e.errors? e.errors : "") }
+    } catch (e) {
+      console.error("[SMARTHOME] [requestSync] Error:", e.code ? e.code : e, e.errors? e.errors : "")
+      if (e.code) this.callback.Alert("[requestSync] Error " + e.code + " - " + e.errors[0].message +" ("+ e.errors[0].reason +")")
+    }
   }
 
   async updateGraph() {
@@ -374,7 +378,7 @@ class SMARTHOME {
       result.on = (data["Screen"] == "ON") ? true : false
     }
     if (this.EXT["EXT-Volume"]) {
-      result.volumeLevel = data.Volume
+      result.currentVolume = data.Volume
     }
     if (this.EXT["EXT-Pages"]) {
       result.currentInput = "page " + data.Page
@@ -399,15 +403,15 @@ class SMARTHOME {
         if (level < 0) level = 0
         callback.volumeDown()
       }
-      return {"status": "SUCCESS", "states": {"online": true, "volumeLevel": level}}
+      return {"status": "SUCCESS", "states": {"online": true, "currentVolume": level}}
     } else if (command == "action.devices.commands.setVolume") {
       callback.volume(params.volumeLevel)
-      return {"status": "SUCCESS", "states": {"online": true, "volumeLevel": params.volumeLevel}}
+      return {"status": "SUCCESS", "states": {"online": true, "currentVolume": params.volumeLevel}}
     } else if (command == "action.devices.commands.SetInput") {
       log("SetInput", params)
       let input = params.newInput.split(" ")
       callback.setPage(input[1])
-      return {"status": "SUCCESS", "states": { "online": true , "newInput": params.newInput}}
+      return {"status": "SUCCESS", "states": { "online": true , "currentInput": params.newInput}}
     } else if (command == "action.devices.commands.NextInput") {
       log("NextInput", params)
       callback.setNextPage()
@@ -419,6 +423,9 @@ class SMARTHOME {
     } else if (command == "action.devices.commands.Reboot") {
       callback.Reboot()
       return {}
+    } else if (command == "action.devices.commands.Locate") {
+      callback.Locate()
+      return {"status": "SUCCESS"}
     } else {
       return {"status": "ERROR"}
     }
