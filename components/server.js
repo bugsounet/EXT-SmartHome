@@ -47,8 +47,7 @@ class SMARTHOME {
     this.device = {
       "type": "action.devices.types.TV",
       "traits": [
-        "action.devices.traits.Reboot",
-        "action.devices.traits.Locator"
+        "action.devices.traits.Reboot"
       ],
       "name": {
           "name": "Jarvis",
@@ -68,8 +67,8 @@ class SMARTHOME {
       "deviceInfo": {
           "manufacturer": "@bugsounet",
           "model": "MMM-GoogleAssistant",
-          "hwVersion": "1",
-          "swVersion": "1"
+          "hwVersion": require('../package.json').version,
+          "swVersion": require('../package.json').rev
       }
     }
     this.keyFile = null
@@ -127,8 +126,6 @@ class SMARTHOME {
             'client_id': this.config.CLIENT_ID
           }
           log("generate Code", this.last_code)
-          log("params:", params)
-          log("link:", args["redirect_uri"] + this.serialize(params))
           res.status(301).redirect(args["redirect_uri"] + this.serialize(params))
         } else {
           res.status(400).sendFile(this.websiteDir+ "/400.html")
@@ -145,7 +142,7 @@ class SMARTHOME {
           } else {
             let access_token = this.random_string(32)
             fs.writeFileSync(this.tokensDir + "/" + access_token, this.last_code_user, { encoding: "utf8"} )
-            log("Send Token:", {"access_token": access_token})
+            log("Send Token:", access_token)
             res.json({"access_token": access_token})
           }
         } else {
@@ -161,6 +158,10 @@ class SMARTHOME {
 
       .post("/", this.actions)
 
+      .get("/graph",(req,res) => {
+        this.queryGraph()
+        res.status(404).sendFile(this.websiteDir+ "/404.html")
+      })
       .use((req, res) => {
         console.warn("[SMARTHOME] Don't find:", req.url, req.body)
         res.status(404).sendFile(this.websiteDir+ "/404.html")
@@ -172,7 +173,7 @@ class SMARTHOME {
         version: 'v1',
         auth: new GoogleAuth({
           keyFile: this.keyFile,
-          scopes: 'https://www.googleapis.com/auth/homegraph'
+          scopes: ['https://www.googleapis.com/auth/homegraph']
         })
       })
       this.requestSync()
@@ -290,6 +291,28 @@ class SMARTHOME {
     }
   }
 
+  async queryGraph() {
+    let query = {
+      requestBody: {
+        requestId: "bugsounetGA-"+Date.now(),
+        agentUserId: "MagicMirror",
+        inputs: [
+          {
+            payload: {
+              devices: [
+                {
+                  id: "MMM-GoogleAssistant"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+    const res = await this.homegraph.devices.query(query)
+    console.log("[SMARTHOME] [QueryGraph]", JSON.stringify(res.data))
+  }
+
   async updateGraph() {
     if (!_.isEqual(this.SmartHome, this.oldSmartHome)) {
       try {
@@ -319,7 +342,7 @@ class SMARTHOME {
           }
         }
         const res = await this.homegraph.devices.reportStateAndNotification(body)
-        log("[homeGraph] [SEND]", res.data, state, res.status, res.statusText)
+        if (res.status != 200) log("[homeGraph] [SEND]", res.data, state, res.status, res.statusText)
       } catch (e) { console.log("[SMARTHOME] [homeGraph]", e.code ? e.code : e, e.errors? e.errors : "") }
     }
   }
@@ -330,7 +353,9 @@ class SMARTHOME {
     this.EXT = {
       "EXT-Screen": GW["EXT-Screen"].hello,
       "EXT-Volume": GW["EXT-Volume"].hello,
-      "EXT-Pages": GW["EXT-Pages"].hello
+      "EXT-Pages": GW["EXT-Pages"].hello,
+      "EXT-Alert": GW["EXT-Alert"].hello,
+      "EXT-Spotify": GW["EXT-Spotify"].hello
     }
     this.SmartHome.Screen = (GW["EXT-Screen"].power == true) ? "ON" : "OFF"
     this.SmartHome.Volume = GW["EXT-Volume"].speaker
@@ -362,13 +387,33 @@ class SMARTHOME {
         this.device.attributes.availableInputs.push(input)
       }
     }
+    if (this.EXT["EXT-Alert"]) {
+      this.device.traits.push("action.devices.traits.Locator")
+    }
+    if (this.EXT["EXT-Spotify"]) { // not tested
+      this.device.traits.push("action.devices.traits.AppSelector")
+      if (!this.device.attributes) this.device.attributes = {}
+      this.device.attributes.availableApplications = []
+      let spotify = {
+        "key": "spotify",
+        "names": [
+          {
+            "name_synonym": [
+              "spotify"
+            ],
+            "lang": "fr"
+          }
+        ]
+      }
+      this.device.attributes.availableApplications.push(spotify)
+    }
     log("Your device is now", this.device)
   }
 
   /** Tools **/
   logRequest(req, res, next) {
     var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress
-    console.log("[" + ip + "][" + req.method + "] " + req.url)
+    log("[" + ip + "][" + req.method + "] " + req.url)
     next()
   }
 
