@@ -6,7 +6,7 @@
 "use strict"
 
 var log = () => { /* do nothing */ }
-const smarthome = require("./components/server.js")
+const server = require("./components/server.js")
 
 var NodeHelper = require("node_helper")
 
@@ -16,40 +16,43 @@ module.exports = NodeHelper.create({
     this.first = true
     this._callbacks = {
       screen: (state) => {
-        log("callback screen:", state)
+        log("Send screen:", state)
         this.sendSocketNotification("SCREEN", state)
       },
       volume: (level) => {
-        log("volume:", level)
+        log("Send volume", level)
         this.sendSocketNotification("VOLUME", level)
       },
       volumeUp: () => {
-        log("volume Up")
+        log("Send volume Up")
         this.sendSocketNotification("VOLUME-UP")
       },
       volumeDown: () => {
-        log("volume Down")
+        log("Send volume Down")
         this.sendSocketNotification("VOLUME-DOWN")
       },
       setPage: (number) => {
-        log("setInput", number)
+        log("Send setInput", number)
         this.sendSocketNotification("SET-PAGE", number)
       },
       setNextPage: () => {
-        log("setNextPage")
+        log("Send setNextPage")
         this.sendSocketNotification("SET-NEXT-PAGE")
       },
       setPreviousPage: () => {
-        log("setPreviousPage")
+        log("Send setPreviousPage")
         this.sendSocketNotification("SET-PREVIOUS-PAGE")
       },
       Alert: (alert) => {
+        log("Send Alert", alert)
         this.sendSocketNotification("ALERT", alert)
       },
       Reboot: () => {
+        log("Send Reboot")
         this.sendSocketNotification("REBOOT")
       },
       Locate: () => {
+        log("Send Locate")
         this.sendSocketNotification("LOCATE")
       }
     }
@@ -59,9 +62,9 @@ module.exports = NodeHelper.create({
     console.log("[SMARTHOME] EXT-SmartHome Version:", require('./package.json').version, "rev:", require('./package.json').rev)
     this.config = payload
     if (payload.debug) {
-      log = (...args) => { console.log("[SMARTHOME]", ...args) }
+      log = (...args) => { console.log("[SMARTHOME] [CORE]", ...args) }
     }
-    this.server = new smarthome(this.config, this._callbacks)
+    this.server = new server(this.config, this._callbacks)
   },
 
   socketNotificationReceived: function(noti, payload) {

@@ -1,7 +1,7 @@
 {
   "name": "EXT-SmartHome",
   "version": "1.0.0",
-  "rev": "230102",
+  "rev": "230105",
   "description": "SmartHome for MagicMirror²",
   "main": "EXT-SmartHome.js",
   "scripts": {
