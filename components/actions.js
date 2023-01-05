@@ -129,11 +129,14 @@ class SMARTHOME {
       "EXT-Alert": GW["EXT-Alert"].hello,
       "EXT-Spotify": GW["EXT-Spotify"].hello
     }
-    this.SmartHome.Screen = (GW["EXT-Screen"].power == true) ? "ON" : "OFF"
+    this.SmartHome.Screen = GW["EXT-Screen"].power
     this.SmartHome.Volume = GW["EXT-Volume"].speaker
-    this.SmartHome.isMuted = GW["EXT-Volume"].isMuted
+    this.SmartHome.VolumeIsMuted = GW["EXT-Volume"].isMuted
     this.SmartHome.Page = GW["EXT-Pages"].actual
     this.SmartHome.MaxPages = GW["EXT-Pages"].total
+    this.SmartHome.SpotifyIsConnected = GW["EXT-Spotify"].connected
+    this.SmartHome.SpotifyIsRemote = GW["EXT-Spotify"].remote
+    this.SmartHome.SpotifyIsPlaying = GW["EXT-Spotify"].play
 
     if (this.EXT["EXT-Screen"]) {
       this.device.traits.push("action.devices.traits.OnOff")
@@ -165,7 +168,7 @@ class SMARTHOME {
     if (this.EXT["EXT-Alert"]) {
       this.device.traits.push("action.devices.traits.Locator")
     }
-    if (this.EXT["EXT-Spotify"]) { // not tested
+    if (this.EXT["EXT-Spotify"]) {
       this.device.traits.push("action.devices.traits.AppSelector")
       if (!this.device.attributes) this.device.attributes = {}
       this.device.attributes.availableApplications = []
@@ -176,11 +179,19 @@ class SMARTHOME {
             "name_synonym": [
               "spotify"
             ],
-            "lang": "fr"
+            "lang": "fr" // <-- change to language
           }
         ]
       }
       this.device.attributes.availableApplications.push(spotify)
+      this.device.traits.push("action.devices.traits.TransportControl")
+      this.device.attributes.transportControlSupportedCommands = [
+        "NEXT",
+        "PAUSE",
+        "PREVIOUS",
+        "RESUME",
+        "STOP"
+      ]
     }
     log("Your device is now", this.device)
   }
@@ -189,15 +200,21 @@ class SMARTHOME {
     this.oldSmartHome = {
       Screen: this.SmartHome.Screen,
       Volume: this.SmartHome.Volume,
-      isMuted: this.SmartHome.isMuted,
+      VolumeIsMuted: this.SmartHome.VolumeIsMuted,
       Page: this.SmartHome.Page,
-      MaxPages: this.SmartHome.MaxPages
+      MaxPages: this.SmartHome.MaxPages,
+      SpotifyIsConnected: this.SmartHome.SpotifyIsConnected,
+      SpotifyIsRemote: this.SmartHome.SpotifyIsRemote,
+      SpotifyIsPlaying: this.SmartHome.SpotifyIsPlaying
     }
-    this.SmartHome.Screen = (data["EXT-Screen"].power == true) ? "ON" : "OFF"
+    this.SmartHome.Screen = data["EXT-Screen"].power
     this.SmartHome.Volume = data["EXT-Volume"].speaker
-    this.SmartHome.isMuted = data["EXT-Volume"].isMuted
+    this.SmartHome.VolumeIsMuted = data["EXT-Volume"].isMuted
     this.SmartHome.Page = data["EXT-Pages"].actual
     this.SmartHome.MaxPages = data["EXT-Pages"].total
+    this.SmartHome.SpotifyIsConnected = data["EXT-Spotify"].connected
+    this.SmartHome.SpotifyIsRemote = data["EXT-Spotify"].remote
+    this.SmartHome.SpotifyIsPlaying = data["EXT-Spotify"].play
   }
 
   getCurrentSmarthome() {

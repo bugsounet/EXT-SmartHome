@@ -12,14 +12,17 @@ class DIAL {
   query(data, EXT) {
     let result = { "online": true }
     if (EXT["EXT-Screen"]) {
-      result.on = (data["Screen"] == "ON") ? true : false
+      result.on = data.Screen
     }
     if (EXT["EXT-Volume"]) {
       result.currentVolume = data.Volume
-      result.isMuted = data.isMuted
+      result.isMuted = data.VolumeIsMuted
     }
     if (EXT["EXT-Pages"]) {
       result.currentInput = "page " + data.Page
+    }
+    if (EXT["EXT-Spotify"]) {
+      // to do something?
     }
     log("[QUERY] Result:", result)
     return result
@@ -43,11 +46,11 @@ class DIAL {
           if (level < 0) level = 0
           callback.volumeDown()
         }
-        return {"status": "SUCCESS", "states": {"online": true, "currentVolume": level, "isMuted": data.isMuted}}
+        return {"status": "SUCCESS", "states": {"online": true, "currentVolume": level, "isMuted": data.VolumeIsMuted}}
         break
       case "action.devices.commands.setVolume":
         callback.volume(params.volumeLevel)
-        return {"status": "SUCCESS", "states": {"online": true, "currentVolume": params.volumeLevel, "isMuted": data.isMuted}}
+        return {"status": "SUCCESS", "states": {"online": true, "currentVolume": params.volumeLevel, "isMuted": data.VolumeIsMuted}}
         break
       case "action.devices.commands.mute":
         callback.volume(params.mute == true ? "mute" : "unmute")
@@ -76,6 +79,21 @@ class DIAL {
       case "action.devices.commands.Locate":
         callback.Locate()
         return {"status": "SUCCESS"}
+        break
+      case "action.devices.commands.mediaStop":
+        return {}
+        break
+      case "action.devices.commands.mediaNext":
+        return {}
+        break
+      case "action.devices.commands.mediaPrevious":
+        return {}
+        break
+      case "action.devices.commands.mediaPause":
+        return {}
+        break
+      case "action.devices.commands.mediaResume":
+        return {}
         break
       default:
         return {"status": "ERROR"}

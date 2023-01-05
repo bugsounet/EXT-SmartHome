@@ -86,14 +86,17 @@ class HOMEGRAPH {
         online: true
       }
       if (EXT["EXT-Screen"]) {
-        state.on = (current.Screen == "ON") ? true : false
+        state.on = current.Screen
       }
       if (EXT["EXT-Volume"]) {
         state.currentVolume = current.Volume
-        state.isMuted = current.isMuted
+        state.isMuted = current.VolumeIsMuted
       }
       if (EXT["EXT-Pages"]) {
         state.currentInput = "page " + current.Page
+      }
+      if (EXT["EXT-Spotify"]) {
+        //to do something ?
       }
       let body = {
         requestBody: {

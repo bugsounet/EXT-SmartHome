@@ -110,7 +110,7 @@ class SERVER {
       })
 
       .use((req, res) => {
-        console.warn("[SMARTHOME] [SERVER] Don't find:", req.url, req.body)
+        log("[404]", req.url, req.body)
         res.status(404).sendFile(this.websiteDir+ "/404.html")
       })
 
