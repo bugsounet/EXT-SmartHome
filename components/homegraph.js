@@ -90,6 +90,7 @@ class HOMEGRAPH {
       }
       if (EXT["EXT-Volume"]) {
         state.currentVolume = current.Volume
+        state.isMuted = current.isMuted
       }
       if (EXT["EXT-Pages"]) {
         state.currentInput = "page " + current.Page

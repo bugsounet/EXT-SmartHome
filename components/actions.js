@@ -131,6 +131,7 @@ class SMARTHOME {
     }
     this.SmartHome.Screen = (GW["EXT-Screen"].power == true) ? "ON" : "OFF"
     this.SmartHome.Volume = GW["EXT-Volume"].speaker
+    this.SmartHome.isMuted = GW["EXT-Volume"].isMuted
     this.SmartHome.Page = GW["EXT-Pages"].actual
     this.SmartHome.MaxPages = GW["EXT-Pages"].total
 
@@ -141,6 +142,7 @@ class SMARTHOME {
       if (!this.device.attributes) this.device.attributes = {}
       this.device.traits.push("action.devices.traits.Volume")
       this.device.attributes.volumeMaxLevel = 100
+      this.device.attributes.volumeCanMuteAndUnmute = true
       this.device.attributes.volumeDefaultPercentage = this.SmartHome.Volume
       this.device.attributes.levelStepSize = 5
     }
@@ -187,11 +189,13 @@ class SMARTHOME {
     this.oldSmartHome = {
       Screen: this.SmartHome.Screen,
       Volume: this.SmartHome.Volume,
+      isMuted: this.SmartHome.isMuted,
       Page: this.SmartHome.Page,
       MaxPages: this.SmartHome.MaxPages
     }
     this.SmartHome.Screen = (data["EXT-Screen"].power == true) ? "ON" : "OFF"
     this.SmartHome.Volume = data["EXT-Volume"].speaker
+    this.SmartHome.isMuted = data["EXT-Volume"].isMuted
     this.SmartHome.Page = data["EXT-Pages"].actual
     this.SmartHome.MaxPages = data["EXT-Pages"].total
   }
