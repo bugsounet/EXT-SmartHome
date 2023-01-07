@@ -168,6 +168,7 @@ class SMARTHOME {
     if (this.EXT["EXT-Alert"]) {
       this.device.traits.push("action.devices.traits.Locator")
     }
+    /* !! under coding !!
     if (this.EXT["EXT-Spotify"]) {
       this.device.traits.push("action.devices.traits.AppSelector")
       if (!this.device.attributes) this.device.attributes = {}
@@ -193,6 +194,7 @@ class SMARTHOME {
         "STOP"
       ]
     }
+    */
     log("Your device is now", this.device)
   }
 
