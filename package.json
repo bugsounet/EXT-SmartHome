@@ -7,7 +7,10 @@
   "scripts": {
     "preinstall": "installer/preinstall.sh",
     "postinstall": "installer/postinstall.sh",
-    "update": "installer/update.sh"
+    "update": "installer/update.sh",
+    "setup": "node installer/setup.js && npm run nginx && npm run certbot",
+    "nginx": "sudo node installer/nginx.js",
+    "certbot": "sudo installer/certbot.sh"
   },
   "repository": {
     "type": "git",
@@ -22,8 +25,12 @@
   },
   "homepage": "https://wiki.bugsounet.fr",
   "dependencies": {
+    "@bugsounet/systemd": "^1.0.1",
+    "@colors/colors": "^1.5.0",
     "actions-on-google": "^3.0.0",
     "googleapis": "^110.0.0",
-    "lodash": "^4.17.21"
+    "is-valid-domain": "^0.1.6",
+    "lodash": "^4.17.21",
+    "prompt": "^1.3.0"
   }
 }
