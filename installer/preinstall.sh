@@ -64,11 +64,11 @@ else
 fi
 
 echo
-# check dependencies
-#dependencies=()
-#Installer_info "Checking all dependencies..."
-#Installer_update_dependencies
-#Installer_success "All Dependencies needed are installed !"
+#check dependencies
+dependencies=(nginx certbot python3 python-is-python3 python3-certbot-nginx)
+Installer_info "Checking all dependencies..."
+Installer_update_dependencies
+Installer_success "All Dependencies needed are installed !"
 
 echo
 Installer_info "Installing all npm libraries..."
