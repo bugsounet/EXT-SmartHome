@@ -89,7 +89,6 @@ async function restartNginx() {
   }
   console.log("[EXT-SmartHome] " + colors.cyan("OK\n"))
   console.log("[EXT-SmartHome] " + colors.yellow("Before you continue: Don't forget to forward ports 80 and 443 to your Pi's IP address!"))
-  console.log("[EXT-SmartHome] " + colors.yellow("When it's ok, run `npm run certbot`"))
 }
 
 main()

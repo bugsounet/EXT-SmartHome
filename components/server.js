@@ -131,7 +131,7 @@ class SERVER {
   /** DataBase update **/
   refreshDB(data) {
     this.actions.refreshData(data)
-    this.homegraph.updateGraph(
+    if (this.homegraph) this.homegraph.updateGraph(
       this.actions.getEXT(),
       this.actions.getCurrentSmarthome(),
       this.actions.getOldSmartHome()
