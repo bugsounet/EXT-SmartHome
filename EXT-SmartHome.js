@@ -23,7 +23,7 @@ Module.register("EXT-SmartHome", {
   notificationReceived: function(noti, payload, sender) {
     switch(noti) {
       case "DOM_OBJECTS_CREATED":
-        this.sendSocketNotification("INIT", this.config)
+        this.getLanguageBeforeInit()
         break
       case "GAv4_READY": // send HELLO to Gateway ... (mark plugin as present in GW db)
         if (sender.name == "MMM-GoogleAssistant") this.sendNotification("EXT_HELLO", this.name)
@@ -84,5 +84,37 @@ Module.register("EXT-SmartHome", {
         })
         break
     }
+  },
+
+  getLanguageBeforeInit: function() {
+    switch (config.language) {
+      case "da":
+      case "nl":
+      case "en":
+      case "fr":
+      case "de":
+      case "hi":
+      case "id":
+      case "it":
+      case "ja":
+      case "ko":
+      case "es":
+      case "sv":
+        this.config.lang = config.language
+        break
+      case "pt":
+      case "pt-br":
+        this.config.lang = "pt-BR"
+        break
+      case "zh-tw":
+        this.config.lang = "zh-TW"
+        break
+      //case "th": ?? Thaï (th)
+      //case "no": ?? Norvégien (no)
+      default:
+        this.config.lang = "en"
+        break
+    }
+    this.sendSocketNotification("INIT", this.config)
   }
 });

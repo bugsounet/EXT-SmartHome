@@ -159,7 +159,7 @@ class SMARTHOME {
         input.key = "page " + i
         input.names = []
         input.names[0] = {}
-        input.names[0].lang = "fr" // <--- change to language
+        input.names[0].lang = this.config.lang
         input.names[0].name_synonym = []
         input.names[0].name_synonym[0] = "page " + i
         this.device.attributes.availableInputs.push(input)
@@ -180,7 +180,7 @@ class SMARTHOME {
             "name_synonym": [
               "spotify"
             ],
-            "lang": "fr" // <-- change to language
+            "lang": this.config.lang
           }
         ]
       }

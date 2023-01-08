@@ -73,6 +73,7 @@ module.exports = NodeHelper.create({
         this.initialize(payload)
         break
       case "GATEWAYDB":
+        if (!this.server) return
         if (this.first) {
           this.server.set(payload)
           this.first = false

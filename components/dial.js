@@ -28,7 +28,7 @@ class DIAL {
     return result
   }
 
-  execute(data, command, params, callback) { // to recode with switch
+  execute(data, command, params, callback) {
     switch (command) {
       case "action.devices.commands.OnOff":
         if (params['on']) callback.screen("ON")
