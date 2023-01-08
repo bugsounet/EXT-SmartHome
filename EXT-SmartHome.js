@@ -83,6 +83,21 @@ Module.register("EXT-SmartHome", {
           timer: 19000
         })
         break
+      case "SPOTIFY-PLAY":
+        this.sendNotification("EXT_SPOTIFY-PLAY")
+        break
+      case "SPOTIFY-PAUSE":
+        this.sendNotification("EXT_SPOTIFY-PAUSE")
+        break
+      case "SPOTIFY-PREVIOUS":
+        this.sendNotification("EXT_SPOTIFY-PREVIOUS")
+        break
+      case "SPOTIFY-NEXT":
+        this.sendNotification("EXT_SPOTIFY-NEXT")
+        break
+      case "STOP":
+        this.sendNotification("EXT_STOP")
+        break
     }
   },
 
@@ -109,8 +124,11 @@ Module.register("EXT-SmartHome", {
       case "zh-tw":
         this.config.lang = "zh-TW"
         break
+      case "nb":
+      case "nn":
+        this.config.lang = "no"
+        break
       //case "th": ?? Thaï (th)
-      //case "no": ?? Norvégien (no)
       default:
         this.config.lang = "en"
         break

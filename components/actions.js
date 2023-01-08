@@ -154,6 +154,17 @@ class SMARTHOME {
       this.device.traits.push("action.devices.traits.InputSelector")
       this.device.attributes.orderedInputs = true
       this.device.attributes.availableInputs = []
+      let stop = {
+        key: "stop",
+        names: [
+          {
+            lang: this.config.lang,
+            name_synonym: [ "stop" ]
+          }
+        ]
+      }
+      this.device.attributes.availableInputs.push(stop)
+
       for (let i = 0; i < this.SmartHome.MaxPages; i++) {
         let input = {}
         input.key = "page " + i
@@ -168,11 +179,21 @@ class SMARTHOME {
     if (this.EXT["EXT-Alert"]) {
       this.device.traits.push("action.devices.traits.Locator")
     }
-    /* !! under coding !!
     if (this.EXT["EXT-Spotify"]) {
       this.device.traits.push("action.devices.traits.AppSelector")
       if (!this.device.attributes) this.device.attributes = {}
       this.device.attributes.availableApplications = []
+      let home = {
+        "key": "home",
+        "names": [
+          {
+            "name_synonym": [
+              "home"
+            ],
+            "lang": this.config.lang
+          }
+        ]
+      }
       let spotify = {
         "key": "spotify",
         "names": [
@@ -184,6 +205,7 @@ class SMARTHOME {
           }
         ]
       }
+      this.device.attributes.availableApplications.push(home)
       this.device.attributes.availableApplications.push(spotify)
       this.device.traits.push("action.devices.traits.TransportControl")
       this.device.attributes.transportControlSupportedCommands = [
@@ -194,7 +216,7 @@ class SMARTHOME {
         "STOP"
       ]
     }
-    */
+
     log("Your device is now", this.device)
   }
 

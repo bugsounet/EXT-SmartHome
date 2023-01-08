@@ -96,7 +96,7 @@ class HOMEGRAPH {
         state.currentInput = "page " + current.Page
       }
       if (EXT["EXT-Spotify"]) {
-        //to do something ?
+        state.currentApplication = current.SpotifyIsConnected ? "spotify" : "home"
       }
       let body = {
         requestBody: {

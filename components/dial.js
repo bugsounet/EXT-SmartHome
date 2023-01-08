@@ -22,7 +22,7 @@ class DIAL {
       result.currentInput = "page " + data.Page
     }
     if (EXT["EXT-Spotify"]) {
-      // to do something?
+      result.currentApplication = data.SpotifyIsConnected ? "spotify" : "home"
     }
     log("[QUERY] Result:", result)
     return result
@@ -59,7 +59,11 @@ class DIAL {
       case "action.devices.commands.SetInput":
         log("SetInput", params)
         let input = params.newInput.split(" ")
-        callback.setPage(input[1])
+        if (input == "stop") {
+          callback.Stop()
+          params.newInput = "page " + data.Page
+        }
+        else callback.setPage(input[1])
         return {"status": "SUCCESS", "states": { "online": true , "currentInput": params.newInput}}
         break
       case "action.devices.commands.NextInput":
@@ -81,19 +85,32 @@ class DIAL {
         return {"status": "SUCCESS"}
         break
       case "action.devices.commands.mediaStop":
+        callback.Stop()
         return {}
         break
       case "action.devices.commands.mediaNext":
+        callback.SpotifyNext()
         return {}
         break
       case "action.devices.commands.mediaPrevious":
+        callback.SpotifyPrevious()
         return {}
         break
       case "action.devices.commands.mediaPause":
+        callback.SpotifyPause()
         return {}
         break
       case "action.devices.commands.mediaResume":
+        callback.SpotifyPlay()
         return {}
+        break
+      case "action.devices.commands.appSelect":
+        if (params.newApplication == "spotify") {
+          if (!data.SpotifyIsConnected && !data.SpotifyIsPlaying) {
+            callback.SpotifyPlay()
+          }
+        }
+        return { "status": "SUCCESS", "states": { "online": true, "currentApplication": params.newApplication }}
         break
       default:
         return {"status": "ERROR"}

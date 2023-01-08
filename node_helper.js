@@ -54,6 +54,26 @@ module.exports = NodeHelper.create({
       Locate: () => {
         log("Send Locate")
         this.sendSocketNotification("LOCATE")
+      },
+      SpotifyPlay: () => {
+        log("Send SpotifyPlay")
+        this.sendSocketNotification("SPOTIFY-PLAY")
+      },
+      SpotifyPause: () => {
+        log("Send SpotifyPause")
+        this.sendSocketNotification("SPOTIFY-PAUSE")
+      },
+      SpotifyPrevious: () => {
+        log("Send SpotifyPrevious")
+        this.sendSocketNotification("SPOTIFY-PREVIOUS")
+      },
+      SpotifyNext: () => {
+        log("Send SpotifyNext")
+        this.sendSocketNotification("SPOTIFY-NEXT")
+      },
+      Stop: () => {
+        log("Send Stop")
+        this.sendSocketNotification("STOP")
       }
     }
   },
