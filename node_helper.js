@@ -34,9 +34,8 @@ module.exports = NodeHelper.create({
         break;
       case "EXT_STATUS":
         if (this.website) {
-          log("Received Status:") //, payload);
           this.website.setEXTStatus(payload);
-          //this.updateSmartHome();
+          this.updateSmartHome();
         } else {
           // library is not loaded ... retry (not needed but...)
           setTimeout(() => { this.socketNotificationReceived("EXT_STATUS", payload); }, 1000);
@@ -60,7 +59,8 @@ module.exports = NodeHelper.create({
       let WebsiteHelperConfig = {
         config: {
           username: this.config.username,
-          password: this.config.password
+          password: this.config.password,
+          CLIENT_ID: this.config.CLIENT_ID
         },
         debug: this.config.debug,
         lib: this.lib
@@ -78,20 +78,35 @@ module.exports = NodeHelper.create({
       if (bugsounet) return this.bugsounetError(bugsounet, "Smarthome");
 
       let SmarthomeHelperConfig = {
-        config: this.config.website,
+        config: {
+          username: this.config.username,
+          password: this.config.password,
+          CLIENT_ID: this.config.CLIENT_ID
+        },
         debug: this.config.debug,
         lang: config.language,
         website: this.website
       };
 
       let smarthomeCallbacks = {
-        sendSocketNotification: (...args) => this.sendSocketNotification(...args),
+        sendSocketNotification: (...args) => {
+          log("Smarthome callback:", ...args)
+          this.sendSocketNotification(...args)
+        },
         restart: () => this.website.restartMM()
       };
 
       this.smarthome = new this.lib.smarthome(SmarthomeHelperConfig, smarthomeCallbacks);
       resolve(true);
     });
+  },
+
+  updateSmartHome () {
+    if (!this.smarthome || !this.config.CLIENT_ID) return;
+    if (this.smarthome.SmartHome.use && this.smarthome.SmartHome.init) {
+      this.smarthome.refreshData();
+      this.smarthome.updateGraph();
+    }
   },
 
   libraries (type) {
@@ -154,5 +169,5 @@ module.exports = NodeHelper.create({
     console.error(`[WEBSITE] [DATA] [${family}] Warning: ${bugsounet} needed library not loaded !`);
     console.error("[WEBSITE] [DATA] Try to solve it with `npm run rebuild` in EXT-Website folder");
     this.sendSocketNotification("WARNING", `[${family}] Try to solve it with 'npm run rebuild' in EXT-Website folder`);
-  },
+  }
 });
