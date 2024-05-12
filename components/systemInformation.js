@@ -172,7 +172,7 @@ class systemInfo {
             this.System["NETWORK"].frequency = undefined;
             this.System["NETWORK"].signalLevel = -99;
             this.System["NETWORK"].barLevel = 0;
-            this.System["NETWORK"].rate = undefined;
+            this.System["NETWORK"].rate = "unknow";
             this.System["NETWORK"].quality = undefined;
 
             data.networkInterfaces.forEach((Interface) => {
@@ -180,7 +180,7 @@ class systemInfo {
                 this.System["NETWORK"].type = Interface.type;
                 this.System["NETWORK"].ip = Interface.ip4;
                 this.System["NETWORK"].name = Interface.iface;
-                this.System["NETWORK"].speed = Interface.speed;
+                this.System["NETWORK"].speed = `${Interface.speed} Mb/s`;
                 this.System["NETWORK"].duplex = Interface.duplex;
               }
             });
