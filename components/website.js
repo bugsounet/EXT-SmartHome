@@ -84,7 +84,7 @@ class website {
       GAConfig: {}, // see to be deleted !?
       HyperWatch: null,
       radio: null,
-      freeteuse: {},
+      freeTV: {},
       systemInformation: {
         lib: null,
         result: {}
@@ -120,11 +120,11 @@ class website {
     this.website.EXTDescription = Translations.Description;
     this.website.translation = Translations.Translate;
     this.website.schemaTranslatation = Translations.Schema;
-    this.website.EXTStatus = Translations.EXTStatus; // <-- to see
+    this.website.EXTStatus = Translations.EXTStatus;
     this.website.GAConfig = this.getGAConfig();
     this.website.homeText = await this.getHomeText();
-    this.website.freeteuse = await this.readFreeteuseTV();
-    this.website.radio = await this.readRadioRecipe();
+    this.website.freeTV = await this.readFreeTV();
+    this.website.radio = await this.readRadio();
 
     this.website.systemInformation.lib = new this.lib.SystemInformation(this.website.translation);
     this.website.systemInformation.result = await this.website.systemInformation.lib.initData();
@@ -922,7 +922,7 @@ class website {
         })
 
         .post("/EXT-FreeboxTVQuery", (req, res) => {
-          if (this.website.freeteuse && req.user) {
+          if (this.website.freeTV && req.user) {
             let data = req.body.data;
             if (!data) return res.send("error");
             this.sendSocketNotification("SendNoti", {
@@ -938,15 +938,10 @@ class website {
           if (req.user) {
             let data = req.body.data;
             if (!data) return res.send("error");
-            try {
-              var toListen = this.website.radio[data].notificationExec.payload();
-              this.sendSocketNotification("SendNoti", {
-                noti: "EXT_RADIO-START",
-                payload: toListen
-              });
-            } catch (e) {
-              res.send("error");
-            }
+            this.sendSocketNotification("SendNoti", {
+              noti: "EXT_RADIO-PLAY",
+              payload: data
+            });
             res.send("ok");
           }
           else res.send("error");
@@ -1118,7 +1113,7 @@ class website {
   }
 
   /** read streamsConfig.json of EXT-FreeboxTV**/
-  readFreeteuseTV () {
+  readFreeTV () {
     return new Promise((resolve) => {
       var streamsConfig = undefined;
       let file = `${this.root_path}/modules/EXT-FreeboxTV/streamsConfig.json`;
@@ -1127,16 +1122,14 @@ class website {
     });
   }
 
-  readRadioRecipe () {
+  readRadio () {
     return new Promise((resolve) => {
       var RadioResult = undefined;
-      var lang = this.website.language;
-      let file = `${this.root_path}/modules/EXT-RadioPlayer/recipe/EXT-RadioPlayer.${lang}.js`;
-      try {
-        if (fs.existsSync(file)) RadioResult = require(file).recipe.commands;
-      } catch (e) {
-        resolve(RadioResult);
-        console.error("[WEBSITE] [Radio] error when loading file", file);
+      const radio = this.website.MMConfig.modules.find((m) => m.module === "EXT-RadioPlayer" && !m.disabled );
+      if (radio?.config?.streams) {
+        let file = `${this.root_path}/modules/EXT-RadioPlayer/${radio.config.streams}`;
+        if (fs.existsSync(file)) RadioResult = require(file);
+        else console.error(`[WEBSITE] [Radio] error when loading file: ${file}`);
       }
       resolve(RadioResult);
     });
