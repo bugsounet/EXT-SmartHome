@@ -41,6 +41,14 @@ module.exports = NodeHelper.create({
           setTimeout(() => { this.socketNotificationReceived("EXT_STATUS", payload); }, 1000);
         }
         break;
+      case "GET-SYSINFO":
+        this.sendSocketNotification("SYSINFO-RESULT", await this.website.website.systemInformation.lib.Get());
+        break;
+      case "TB_SYSINFO":
+        var result = await this.website.website.systemInformation.lib.Get();
+        result.sessionId = payload;
+        this.sendSocketNotification("TB_SYSINFO-RESULT", result);
+        break;
     }
   },
 

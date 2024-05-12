@@ -10,7 +10,7 @@ class systemInfo {
     this.translate = translate;
     this.System = {
       VERSION: {
-        GA: `${require("../package.json").version} (${require("../package.json").rev})`,
+        GA: `${require("../../MMM-GoogleAssistant/package.json").version} (${require("../../MMM-GoogleAssistant/package.json").rev})`,
         MagicMirror: require("../../../package.json").version,
         ELECTRON: "unknow",
         NODEMM: "unknow",
