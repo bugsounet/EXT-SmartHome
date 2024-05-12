@@ -889,7 +889,6 @@ class sysInfoPage {
   updateTimer () {
     this.sendSocketNotification("GET-SYSINFO");
     this.timerRefresh = setInterval(() => {
-      console.log("updated!")
       this.sendSocketNotification("GET-SYSINFO");
     }, 10000);
   }
