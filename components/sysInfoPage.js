@@ -617,7 +617,7 @@ class sysInfoPage {
       MM.getModules().enumerate((module) => {
         module.hide(500, () => {}, { lockString: "WEBSITE_SYSINFO_LOCK" });
       });
-      console.log("[WEBSITE] show sysinfo");
+      console.log("[WEBSITE] Show SysInfo");
       var SysInfo = document.getElementById("WEBSITE_SYSINFO");
       SysInfo.classList.remove("hidden");
       removeAnimateCSS("WEBSITE_SYSINFO", "backOutRight");
@@ -631,7 +631,7 @@ class sysInfoPage {
     if (this.showing && this.init) {
       clearInterval(this.timerRefresh);
       clearTimeout(this.timerHide);
-      console.log("[WEBSITE] hide sysinfo");
+      console.log("[WEBSITE] Hide SysInfo");
       var SysInfo = document.getElementById("WEBSITE_SYSINFO");
       removeAnimateCSS("WEBSITE_SYSINFO", "backInLeft");
       addAnimateCSS("WEBSITE_SYSINFO", "backOutRight", 1);
@@ -654,7 +654,6 @@ class sysInfoPage {
   updateSystemData (data) {
     this.System = Object.assign({}, this.System, data);
     this.refreshData();
-    logGA("system Info updated:", this.System);
   }
 
   refreshData () {
@@ -752,7 +751,7 @@ class sysInfoPage {
     SSID.textContent = this.System.NETWORK.ssid;
     var bitRate_ = document.getElementById("WEBSITE-SYSINFO_NETWORK-RATE");
     var bitRate = document.getElementById("WEBSITE-SYSINFO_NETWORK-RATE-VALUE");
-    bitRate.textContent = `${this.System.NETWORK.rate} Mb/s`;
+    bitRate.textContent = `${this.System.NETWORK.rate}`;
     var frequency_ = document.getElementById("WEBSITE-SYSINFO_NETWORK-FREQUENCY");
     var frequency = document.getElementById("WEBSITE-SYSINFO_NETWORK-FREQUENCY-VALUE");
     frequency.textContent = `${this.System.NETWORK.frequency} GHz`;

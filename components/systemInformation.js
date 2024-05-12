@@ -108,7 +108,6 @@ class systemInfo {
 
   async Get () {
     await this.getData();
-    //console.log("[WEBSITE] [SYSTEMINFO]", this.System)
     return this.System;
   }
 
@@ -140,7 +139,7 @@ class systemInfo {
           resolve();
         })
         .catch((e) => {
-          console.log("Error", e);
+          console.error("[WEBSITE] [SYSTEMINFO] Error", e);
           resolve();
         });
     });
@@ -389,8 +388,8 @@ class systemInfo {
       parsed.frequency = parseFloat(match[1]);
     }
 
-    if ((match = block.match(/Bit Rate[:|=]\s*([0-9]+)/))) {
-      parsed.rate = parseInt(match[1], 10);
+    if ((match = block.match(/Bit Rate[:|=]\s*([0-9\.]+ .b\/s)/))) {
+       parsed.rate = match[1];
     }
 
     if ((match = block.match(/Link Quality[:|=]\s*([0-9]+)/))) {
