@@ -90,8 +90,6 @@ class website {
         result: {}
       },
       activeVersion: {},
-      usePM2: false,
-      PM2Process: 0,
       homeText: null,
       errorInit: false
     };
@@ -127,7 +125,6 @@ class website {
     this.website.homeText = await this.getHomeText();
     this.website.freeteuse = await this.readFreeteuseTV();
     this.website.radio = await this.readRadioRecipe();
-    this.website.usePM2 = await this.check_PM2_Process();
 
     this.website.systemInformation.lib = new this.lib.SystemInformation(this.website.translation);
     this.website.systemInformation.result = await this.website.systemInformation.lib.initData();
@@ -648,7 +645,7 @@ class website {
         .get("/Restart", (req, res) => {
           if (req.user) {
             res.sendFile(`${this.WebsitePath}/Gateway/restarting.html`);
-            setTimeout(() => this.restartMM(), 1000);
+            setTimeout(() => this.sendSocketNotification("SendNoti", "EXT_GATEWAY-Restart"), 1000);
           }
           else res.status(403).sendFile(`${this.WebsitePath}/Gateway/403.html`);
         })
@@ -656,7 +653,7 @@ class website {
         .get("/Die", (req, res) => {
           if (req.user) {
             res.sendFile(`${this.WebsitePath}/Gateway/die.html`);
-            setTimeout(() => this.doClose(), 3000);
+            setTimeout(() => this.sendSocketNotification("SendNoti", "EXT_GATEWAY-Close"), 3000);
           }
           else res.status(403).sendFile(`${this.WebsitePath}/Gateway/403.html`);
         })
@@ -664,7 +661,7 @@ class website {
         .get("/SystemRestart", (req, res) => {
           if (req.user) {
             res.sendFile(`${this.WebsitePath}/Gateway/restarting.html`);
-            setTimeout(() => this.SystemRestart(), 1000);
+            setTimeout(() => this.sendSocketNotification("SendNoti", "EXT-GATEWAY-Reboot"), 1000);
           }
           else res.status(403).sendFile(`${this.WebsitePath}/Gateway/403.html`);
         })
@@ -672,7 +669,7 @@ class website {
         .get("/SystemDie", (req, res) => {
           if (req.user) {
             res.sendFile(`${this.WebsitePath}/Gateway/die.html`);
-            setTimeout(() => this.SystemDie(), 3000);
+            setTimeout(() => tthis.sendSocketNotification("SendNoti", "EXT-GATEWAY-Shutdown"), 3000);
           }
           else res.status(403).sendFile(`${this.WebsitePath}/Gateway/403.html`);
         })
@@ -1738,73 +1735,6 @@ class website {
         resolve(true);
       } else resolve(false);
     });
-  }
-
-  /** Check using pm2 **/
-  check_PM2_Process () {
-    console.log("[WEBSITE] [PM2] checking PM2 using...");
-    return new Promise((resolve) => {
-      pm2.connect((err) => {
-        if (err) {
-          console.error("[WEBSITE] [PM2]", err);
-          resolve(false);
-          return;
-        }
-        pm2.list((err, list) => {
-          if (err) {
-            console.error("[WEBSITE] [PM2] Can't get process List!", err);
-            resolve(false);
-            return;
-          }
-          list.forEach((pm) => {
-            if (pm.pm2_env.version === this.MMVersion && pm.pm2_env.status === "online" && pm.pm2_env.pm_cwd.includes(`${this.root_path}/`)) {
-              this.website.PM2Process = pm.name;
-              console.log("[WEBSITE] [PM2] You are using PM2 with", this.website.PM2Process);
-              resolve(true);
-            }
-          });
-          pm2.disconnect();
-          if (!this.website.PM2Process) {
-            console.log("[WEBSITE] [PM2] You don't use PM2");
-            resolve(false);
-          }
-        });
-      });
-    });
-  }
-
-  /** MagicMirror restart and stop **/
-  restartMM () {
-    if (this.website.usePM2) {
-      console.log("[WEBSITE] PM2 will restarting MagicMirror...");
-      pm2.restart(this.website.PM2Process, (err, proc) => {
-        if (err) {
-          console.error(`[WEBSITE] [PM2] Restart:${err}`);
-        }
-      });
-    }
-    else this.doRestart();
-  }
-
-  doRestart () {
-    console.log("[WEBSITE] Restarting MagicMirror...");
-    const out = process.stdout;
-    const err = process.stderr;
-    const subprocess = spawn("npm start", { cwd: this.root_path, shell: true, detached: true, stdio: ["ignore", out, err] });
-    subprocess.unref();
-    process.exit();
-  }
-
-  doClose () {
-    console.log("[WEBSITE] Closing MagicMirror...");
-    if (this.website.usePM2) {
-      pm2.stop(this.website.PM2Process, (err, proc) => {
-        if (err) {
-          console.error(`[WEBSITE] [PM2] stop: ${err}`);
-        }
-      });
-    }
-    else process.exit();
   }
 
   setEXTStatus (EXTs) {
