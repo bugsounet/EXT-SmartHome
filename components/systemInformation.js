@@ -389,7 +389,7 @@ class systemInfo {
     }
 
     if ((match = block.match(/Bit Rate[:|=]\s*([0-9\.]+ .b\/s)/))) {
-       parsed.rate = match[1];
+      parsed.rate = match[1];
     }
 
     if ((match = block.match(/Link Quality[:|=]\s*([0-9]+)/))) {
