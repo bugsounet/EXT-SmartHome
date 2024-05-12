@@ -14,8 +14,8 @@ Module.register("EXT-Website", {
 
   start () {
     this.ready = false;
-    this.config.translations = {}
-    this.EXT_DB = []
+    this.config.translations = {};
+    this.EXT_DB = [];
   },
 
   socketNotificationReceived (notification, payload) {
@@ -29,7 +29,7 @@ Module.register("EXT-Website", {
         this.sendSocketNotification("SMARTHOME-INIT");
         break;
       case "SendNoti":
-        console.log("---> SendNoti:", payload)
+        console.log("---> SendNoti:", payload);
         if (payload.payload && payload.noti) this.sendNotification(payload.noti, payload.payload);
         else this.sendNotification(payload);
         break;
@@ -42,14 +42,14 @@ Module.register("EXT-Website", {
         if (sender.name === "MMM-GoogleAssistant") this.Translation_Config();
         break;
       case "EXT_DB":
-        this.EXT_DB = payload
-        console.log("[WEBSITE] Received Database", this.EXT_DB)
+        this.EXT_DB = payload;
+        console.log("[WEBSITE] Received Database", this.EXT_DB);
         break;
       case "EXT_DB-UPDATE":
-        this.sendSocketNotification("EXT_DB-UPDATE", payload)
+        this.sendSocketNotification("EXT_DB-UPDATE", payload);
         break;
       case "EXT_STATUS":
-        this.sendSocketNotification("EXT_STATUS", payload)
+        this.sendSocketNotification("EXT_STATUS", payload);
         break;
     }
   },
@@ -62,7 +62,7 @@ Module.register("EXT-Website", {
 
   getScripts () {
     return [
-      "/modules/EXT-Website/components/WebsiteTranslations.js",
+      "/modules/EXT-Website/components/WebsiteTranslations.js"
       //"/modules/MMM-GoogleAssistant/components/sysInfoPage.js"
     ];
   },
@@ -82,7 +82,7 @@ Module.register("EXT-Website", {
 
   async Translation_Config () {
     const Tools = {
-      translate: (...args) => this.translate(...args),
+      translate: (...args) => this.translate(...args)
       //sendNotification: (...args) => this.sendNotification(...args),
       //sendSocketNotification: (...args) => this.sendSocketNotification(...args),
       //socketNotificationReceived: (...args) => this.socketNotificationReceived(...args),
@@ -96,11 +96,11 @@ Module.register("EXT-Website", {
     //this.session = {}; // <-- for TB
     //this.sysInfo = new sysInfoPage(Tools);
     //this.sysInfo.prepare();
-    this.config.EXT_DB = this.EXT_DB
-    this.config.translations.Description = this.Translations.Get_EXT_Description()
-    this.config.translations.Translate = this.Translations.Get_EXT_Translation()
-    this.config.translations.Schema = this.Translations.Get_EXT_TrSchemaValidation()
-    this.sendSocketNotification("INIT", this.config)
+    this.config.EXT_DB = this.EXT_DB;
+    this.config.translations.Description = this.Translations.Get_EXT_Description();
+    this.config.translations.Translate = this.Translations.Get_EXT_Translation();
+    this.config.translations.Schema = this.Translations.Get_EXT_TrSchemaValidation();
+    this.sendSocketNotification("INIT", this.config);
   },
 
   /** smarthome callbacks **/

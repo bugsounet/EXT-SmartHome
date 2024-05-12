@@ -1,2 +1,5 @@
 /node_modules/
 /smarthome.json
+/backup/config.js.GA.*
+/website/tools/.uptimed
+/website/tokens/*

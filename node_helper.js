@@ -23,7 +23,7 @@ module.exports = NodeHelper.create({
         var smarthome = await this.parseSmarthome();
         if (smarthome) await this.smarthome.init();
         this.website.server();
-        this.sendSocketNotification("INITIALIZED")
+        this.sendSocketNotification("INITIALIZED");
         break;
       case "EXT_DB-UPDATE":
         if (this.website) this.website.setActiveVersion(payload);
@@ -90,8 +90,8 @@ module.exports = NodeHelper.create({
 
       let smarthomeCallbacks = {
         sendSocketNotification: (...args) => {
-          log("Smarthome callback:", ...args)
-          this.sendSocketNotification(...args)
+          log("Smarthome callback:", ...args);
+          this.sendSocketNotification(...args);
         },
         restart: () => this.website.restartMM()
       };
