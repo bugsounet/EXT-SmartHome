@@ -1629,7 +1629,7 @@ class website {
       console.error(`Already Activated: ${module}`);
       return;
     }
-    else console.log("[WEBSITE] Detected:", module);
+    else log("Detected:", module);
     this.website.activeVersion[module] = {
       version: require(`../../${module}/package.json`).version,
       rev: require(`../../${module}/package.json`).rev
