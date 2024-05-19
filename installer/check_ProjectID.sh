@@ -1,5 +1,5 @@
 echo "Your MMM-GoogleAssistant project_id is: \c"
-cat credentials.json 2>/dev/null | grep -oP '(?<="project_id":")[^"]*' || {
+cat ../MMM-GoogleAssistant/credentials.json 2>/dev/null | grep -oP '(?<="project_id":")[^"]*' || {
   echo "credentials not found!"
 }
 echo "---"
