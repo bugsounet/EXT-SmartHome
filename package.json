@@ -14,7 +14,6 @@
     "smarthome": "sudo node installer/setup && npm run certbot",
     "certbot": "sudo installer/certbot.sh",
     "project": "installer/check_ProjectID.sh",
-    "migrate": "node installer/migrate.js",
     "lint": "eslint *.js installer/*.js components/*.js --config eslint.config.js",
     "lint:fix": "eslint *.js installer/*.js components/*.js --config eslint.config.js --fix",
     "test": "npm run lint",
@@ -24,12 +23,9 @@
     "MMM-GoogleAssistant",
     "magic mirror",
     "module",
-    "sensor",
-    "motion detection",
     "interface",
     "website",
-    "EXT",
-    "GoogleAssistant"
+    "EXT"
   ],
   "engines": {
     "node": ">=18"
