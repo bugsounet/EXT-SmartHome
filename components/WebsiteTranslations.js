@@ -259,6 +259,7 @@ class WebsiteTranslations {
       this.EXTDescription["EXT-Updates"] = this.translate("EXT-Updates");
       this.EXTDescription["EXT-VLCServer"] = this.translate("EXT-VLCServer");
       this.EXTDescription["EXT-Volume"] = this.translate("EXT-Volume");
+      this.EXTDescription["EXT-Website"] = this.translate("EXT-Website");
       this.EXTDescription["EXT-Welcome"] = this.translate("EXT-Welcome");
       this.EXTDescription["EXT-YouTube"] = this.translate("EXT-YouTube");
       this.EXTDescription["EXT-YouTubeCast"] = this.translate("EXT-YouTubeCast");
@@ -459,6 +460,9 @@ class WebsiteTranslations {
       this.VALTranslate["EXT-Updates_Welcome"] = this.translate("VAL_EXT-Updates_Welcome");
       this.VALTranslate["EXT-Volume_Start"] = this.translate("VAL_EXT-Volume_Start");
       this.VALTranslate["EXT-Volume_Sync"] = this.translate("VAL_EXT-Volume_Sync");
+      this.VALTranslate["EXT-Website_username"] = this.translate("VAL_EXT-Website_username");
+      this.VALTranslate["EXT-Website_password"] = this.translate("VAL_EXT-Website_password");
+      this.VALTranslate["EXT-Website_CLIENTID"] = this.translate("VAL_EXT-Website_CLIENTID");
       this.VALTranslate["EXT-Welcome_Welcome"] = this.translate("VAL_EXT-Welcome_Welcome");
       this.VALTranslate["EXT-YouTube_Fullscreen"] = this.translate("VAL_EXT-YouTube_Fullscreen");
       this.VALTranslate["EXT-YouTube_Width"] = this.translate("VAL_EXT-YouTube_Width");
