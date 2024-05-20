@@ -1,0 +1,177 @@
+"use strict";
+
+const fs = require("node:fs");
+const util = require("node:util");
+const { exec, spawn } = require("node:child_process");
+const http = require("node:http");
+const express = require("express");
+const session = require("express-session");
+const bodyParser = require("body-parser");
+const cors = require("cors");
+
+var log = (...args) => { /* do nothing */ };
+
+class website {
+  constructor (config, cb = () => {}) {
+    this.lib = config.lib;
+    this.config = config.config;
+    this.sendSocketNotification = (...args) => cb(...args);
+
+    if (config.debug) log = (...args) => { console.log("[SMARTHOME]", ...args); };
+
+    this.website = {
+      EXT: null, // EXT plugins list
+      EXTStatus: {}, // status of EXT
+      user: { _id: 1, username: "admin", password: "admin" },
+      initialized: false,
+      app: null,
+      server: null,
+      language: null,
+      activeVersion: {},
+      errorInit: false
+    };
+    this.MMVersion = global.version;
+    this.root_path = global.root_path;
+    this.GAPath = `${this.root_path}/modules/MMM-GoogleAssistant`;
+    this.WebsiteModulePath = `${this.root_path}/modules/EXT-SmartHome`;
+    this.WebsitePath = `${this.root_path}/modules/EXT-SmartHome/website`;
+  }
+
+  async init (data) {
+    console.log("[SMARTHOME] Loading SmartHome...");
+
+    if (this.lib.error || this.website.errorInit) return;
+    this.website.EXT = data.EXT_DB.sort();
+
+    if (!this.config.username && !this.config.password) {
+      console.error("[SMARTHOME] Your have not defined user/password in config!");
+      console.error("[SMARTHOME] Using default credentials");
+    } else {
+      if ((this.config.username === this.website.user.username) || (this.config.password === this.website.user.password)) {
+        console.warn("[SMARTHOME] WARN: You are using default username or default password");
+        console.warn("[SMARTHOME] WARN: Don't forget to change it!");
+      }
+      this.website.user.username = this.config.username;
+      this.website.user.password = this.config.password;
+    }
+
+    await this.createWebsite();
+    console.log("[SMARTHOME] Website Ready!");
+    this.sendSocketNotification("WEBSITE-INIT");
+  }
+
+  server () {
+    console.log("[SMARTHOME] Loading Server...");
+    this.startServer((cb) => {
+      if (cb) {
+        console.log("[SMARTHOME] Server Ready!");
+      }
+    });
+  }
+
+  /** GA Middleware **/
+  createWebsite () {
+    return new Promise((resolve) => {
+      this.website.app = express();
+      this.website.server = http.createServer(this.website.app);
+
+      var urlencodedParser = bodyParser.urlencoded({ extended: true });
+      log("Create smarthome needed routes...");
+      this.website.app.use(session({
+        secret: "some-secret",
+        saveUninitialized: false,
+        resave: true
+      }));
+
+      // For parsing post request's data/body
+      this.website.app.use(bodyParser.json());
+      this.website.app.use(bodyParser.urlencoded({ extended: true }));
+
+      var options = {
+        dotfiles: "ignore",
+        etag: false,
+        extensions: ["css", "js"],
+        index: false,
+        maxAge: "1d",
+        redirect: false,
+        setHeaders (res) {
+          res.set("x-timestamp", Date.now());
+        }
+      };
+
+      var healthDownloader = function (req, res) {
+        res.redirect("/");
+      };
+
+      this.website.app
+        .use(this.logRequest)
+        .use(cors({ origin: "*" }))
+        .use("/assets", express.static(`${this.WebsitePath}/assets`, options))
+
+        .get("/robots.txt", (req, res) => {
+          res.sendFile(`${this.WebsitePath}/Gateway/robots.txt`);
+        });
+
+      if (!this.config.CLIENT_ID) {
+        this.website.app
+          .use("/smarthome/assets", express.static(`${this.WebsitePath}/assets`, options))
+          .get("/smarthome/login/", (req, res) => {
+            res.sendFile(`${this.WebsitePath}/SmartHome/disabled.html`);
+          })
+          .get("/smarthome/", (req, res) => {
+            res.sendFile(`${this.WebsitePath}/SmartHome/disabled.html`);
+          });
+      }
+      resolve();
+    });
+  }
+
+  /** log any traffic **/
+  logRequest (req, res, next) {
+    var ip = req.headers["x-forwarded-for"] || req.connection.remoteAddress;
+    log(`[${ip}] [${req.method}] ${req.url}`);
+    next();
+  }
+
+  /******************/
+  /** Start Server **/
+  /******************/
+  async startServer (callback = () => {}) {
+
+    /** Error 404 **/
+    this.website.app
+      .get("/smarthome/*", (req, res) => {
+        console.warn("[SMARTHOME] [SMARTHOME] Don't find:", req.url);
+        res.status(404).sendFile(`${this.WebsitePath}/SmartHome/404.html`);
+      });
+    this.website.app
+      .get("/*", (req, res) => {
+        console.warn("[SMARTHOME] Don't find:", req.url);
+        res.status(404).sendFile(`${this.WebsitePath}/Gateway/404.html`);
+      });
+
+    /** Create Server **/
+    this.website.server
+      .listen(8083, "0.0.0.0", () => {
+        console.log("[SMARTHOME] Start listening on port 8083");
+        this.website.initialized = true;
+        callback(true);
+      })
+      .on("error", (err) => {
+        console.error("[SMARTHOME] Can't start web server!");
+        console.error("[SMARTHOME] Error:", err.message);
+        this.sendSocketNotification("SendNoti", {
+          noti: "EXT_ALERT",
+          payload: {
+            type: "error",
+            message: "Can't start web server!",
+            timer: 10000
+          }
+        });
+        this.website.initialized = false;
+        callback(false);
+      });
+  }
+}
+
+module.exports = website;

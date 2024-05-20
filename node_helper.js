@@ -25,60 +25,47 @@ module.exports = NodeHelper.create({
         this.website.server();
         this.sendSocketNotification("INITIALIZED");
         break;
-      case "EXT_DB-UPDATE":
-        if (this.website) this.website.setActiveVersion(payload);
-        else {
-          // library is not loaded
-          setTimeout(() => { this.socketNotificationReceived("EXT_DB-UPDATE", payload); }, 1000);
-        }
-        break;
       case "EXT_STATUS":
-        if (this.website) {
-          this.website.setEXTStatus(payload);
+        console.log("Status",payload)
+        if (this.smarthome) {
+          //this.smarthome.setEXTStatus(payload);
           this.updateSmartHome();
         } else {
           // library is not loaded ... retry (not needed but...)
           setTimeout(() => { this.socketNotificationReceived("EXT_STATUS", payload); }, 1000);
         }
         break;
-      case "GET-SYSINFO":
-        this.sendSocketNotification("SYSINFO-RESULT", await this.website.website.systemInformation.lib.Get());
-        break;
-      case "TB_SYSINFO":
-        var result = await this.website.website.systemInformation.lib.Get();
-        result.sessionId = payload;
-        this.sendSocketNotification("TB_SYSINFO-RESULT", result);
-        break;
     }
   },
 
   async initialize () {
-    console.log(`[WEBSITE] EXT-Website Version: ${require("./package.json").version} rev: ${require("./package.json").rev}`);
-    if (this.config.debug) log = (...args) => { console.log("[WEBSITE]", ...args); };
-    await this.parseWebsite();
-    this.lib.HyperWatch.enable();
-    this.website.init(this.config);
+    console.log(`[SMARTHOME] EXT-SmartHome Version: ${require("./package.json").version} rev: ${require("./package.json").rev}`);
+    if (this.config.debug) log = (...args) => { console.log("[SMARTHOME]", ...args); };
+    await this.parseSmartHome();
+    this.smarthome.init(this.config);
   },
 
-  async parseWebsite () {
-    const bugsounet = await this.libraries("website");
+  async parseSmartHome () {
+    const bugsounet = await this.libraries("smarthome");
     return new Promise((resolve) => {
-      if (bugsounet) return this.bugsounetError(bugsounet, "Website");
-      let WebsiteHelperConfig = {
+      if (bugsounet) return this.bugsounetError(bugsounet, "smarthome");
+      let HelperConfig = {
         config: {
           username: this.config.username,
           password: this.config.password,
           CLIENT_ID: this.config.CLIENT_ID
         },
         debug: this.config.debug,
+        lang: config.language,
         lib: this.lib
       };
 
-      this.website = new this.lib.website(WebsiteHelperConfig, (...args) => this.sendSocketNotification(...args));
+      this.smarthome = new this.lib.smarthome(HelperConfig, (...args) => this.sendSocketNotification(...args));
       resolve();
     });
   },
 
+/*
   async parseSmarthome () {
     if (!this.config.CLIENT_ID) return false;
     const bugsounet = await this.libraries("smarthome");
@@ -108,6 +95,7 @@ module.exports = NodeHelper.create({
       resolve(true);
     });
   },
+*/
 
   updateSmartHome () {
     if (!this.smarthome || !this.config.CLIENT_ID) return;
@@ -120,22 +108,12 @@ module.exports = NodeHelper.create({
   libraries (type) {
     let Libraries = [];
 
-    let website = [
-      { "./components/hyperwatch.js": "HyperWatch" },
-      { "./components/systemInformation.js": "SystemInformation" },
-      { "./components/website.js": "website" }
-    ];
-
     let smarthome = [
       { "./components/smarthome.js": "smarthome" }
     ];
     let errors = 0;
 
     switch (type) {
-      case "website":
-        log("Loading website Libraries...");
-        Libraries = website;
-        break;
       case "smarthome":
         log("Loading smarhome Libraries...");
         Libraries = smarthome;
@@ -157,8 +135,8 @@ module.exports = NodeHelper.create({
               log(`[LIB] Loaded: ${libraryToLoad} --> this.lib.${libraryName}`);
             }
           } catch (e) {
-            //console.error(`[WEBSITE] [LIB] ${libraryToLoad} Loading error!`, e.message);
-            console.error(`[WEBSITE] [LIB] ${libraryToLoad} Loading error!`, e);
+            //console.error(`[SMARTHOME] [LIB] ${libraryToLoad} Loading error!`, e.message);
+            console.error(`[SMARTHOME] [LIB] ${libraryToLoad} Loading error!`, e);
             this.sendSocketNotification("ERROR", `Loading error! library: ${libraryToLoad}`);
             errors++;
             this.lib.error = errors;
@@ -167,15 +145,15 @@ module.exports = NodeHelper.create({
       });
       resolve(errors);
       if (errors) {
-        console.error("[WEBSITE] [LIB] Some libraries missing!");
+        console.error("[SMARTHOME] [LIB] Some libraries missing!");
         //this.sendSocketNotification("NOT_INITIALIZED", { message: "Library loading Error!" });
-      } else console.log(`[WEBSITE] [LIB] All ${type} libraries loaded!`);
+      } else console.log(`[SMARTHOME] [LIB] All ${type} libraries loaded!`);
     });
   },
 
   bugsounetError (bugsounet, family) {
-    console.error(`[WEBSITE] [DATA] [${family}] Warning: ${bugsounet} needed library not loaded !`);
-    console.error("[WEBSITE] [DATA] Try to solve it with `npm run rebuild` in EXT-Website folder");
+    console.error(`[SMARTHOME] [DATA] [${family}] Warning: ${bugsounet} needed library not loaded !`);
+    console.error("[SMARTHOME] [DATA] Try to solve it with `npm run rebuild` in EXT-Website folder");
     this.sendSocketNotification("WARNING", `[${family}] Try to solve it with 'npm run rebuild' in EXT-Website folder`);
   }
 });
