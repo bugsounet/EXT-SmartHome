@@ -42,7 +42,7 @@ module.exports = NodeHelper.create({
     console.log(`[SMARTHOME] EXT-SmartHome Version: ${require("./package.json").version} rev: ${require("./package.json").rev}`);
     if (this.config.debug) log = (...args) => { console.log("[SMARTHOME]", ...args); };
     await this.parseSmartHome();
-    this.smarthome.init(this.config);
+    this.smarthome.init();
   },
 
   async parseSmartHome () {
@@ -50,18 +50,23 @@ module.exports = NodeHelper.create({
     return new Promise((resolve) => {
       if (bugsounet) return this.bugsounetError(bugsounet, "smarthome");
       let HelperConfig = {
-        config: {
-          username: this.config.username,
-          password: this.config.password,
-          CLIENT_ID: this.config.CLIENT_ID
-        },
+        username: this.config.username,
+        password: this.config.password,
+        CLIENT_ID: this.config.CLIENT_ID,
         debug: this.config.debug,
-        lang: config.language,
-        lib: this.lib
+        lang: config.language
       };
 
-      this.smarthome = new this.lib.smarthome(HelperConfig, (...args) => this.sendSocketNotification(...args));
-      resolve();
+      let callbacks = {
+        sendSocketNotification: (...args) => this.sendSocketNotification(...args),
+        restart: () => {
+          //this.website.restartMM()
+          console.log("[SMARTHOME] Need Restart")
+        }
+      };
+
+      this.smarthome = new this.lib.smarthome(HelperConfig, callbacks);
+      resolve(true);
     });
   },
 
