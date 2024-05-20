@@ -26,7 +26,7 @@ module.exports = NodeHelper.create({
         this.sendSocketNotification("INITIALIZED");
         break;
       case "EXT_STATUS":
-        console.log("Status",payload)
+        console.log("Status",payload);
         if (this.smarthome) {
           //this.smarthome.setEXTStatus(payload);
           this.updateSmartHome();
@@ -38,39 +38,34 @@ module.exports = NodeHelper.create({
     }
   },
 
-  async initialize () {
+  initialize () {
     console.log(`[SMARTHOME] EXT-SmartHome Version: ${require("./package.json").version} rev: ${require("./package.json").rev}`);
     if (this.config.debug) log = (...args) => { console.log("[SMARTHOME]", ...args); };
-    await this.parseSmartHome();
-    this.smarthome.init();
+    this.parseSmartHome();
   },
 
   async parseSmartHome () {
     const bugsounet = await this.libraries("smarthome");
-    return new Promise((resolve) => {
-      if (bugsounet) return this.bugsounetError(bugsounet, "smarthome");
-      let HelperConfig = {
-        username: this.config.username,
-        password: this.config.password,
-        CLIENT_ID: this.config.CLIENT_ID,
-        debug: this.config.debug,
-        lang: config.language
-      };
 
-      let callbacks = {
-        sendSocketNotification: (...args) => this.sendSocketNotification(...args),
-        restart: () => {
-          //this.website.restartMM()
-          console.log("[SMARTHOME] Need Restart")
-        }
-      };
+    if (bugsounet) return this.bugsounetError(bugsounet, "smarthome");
+    let HelperConfig = {
+      username: this.config.username,
+      password: this.config.password,
+      CLIENT_ID: this.config.CLIENT_ID,
+      debug: this.config.debug,
+      lang: config.language
+    };
 
-      this.smarthome = new this.lib.smarthome(HelperConfig, callbacks);
-      resolve(true);
-    });
+    let callbacks = {
+      sendSocketNotification: (...args) => this.sendSocketNotification(...args)
+    };
+
+    this.smarthome = new this.lib.smarthome(HelperConfig, callbacks);
+    await this.smarthome.init();
+    this.smarthome.createMiddleware();
   },
 
-/*
+  /*
   async parseSmarthome () {
     if (!this.config.CLIENT_ID) return false;
     const bugsounet = await this.libraries("smarthome");
