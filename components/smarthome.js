@@ -21,7 +21,7 @@ class smarthome {
 
     this.smarthome = {
       lang: this.SHLanguage(this.config.lang),
-      user: { username: "admin", password: "admin" },
+      user: { username: "admin", password: "admin", devices: ["MMM-GoogleAssistant"] },
       use: false, // credentials and CLIENT_ID ok
       app: null,
       server: null,
@@ -145,7 +145,7 @@ class smarthome {
           let args = req.query;
           if (form["username"] && form["password"] && args["state"] && args["response_type"] && args["response_type"] === "code" && args["client_id"] === this.config.CLIENT_ID) {
             let user = this.get_user(form["username"], form["password"]);
-            if (!user) return res.sendFile(`${this.smarthomePath}/login.html`);
+            if (!user) return res.sendFile(`${this.smarthomeWebsitePath}/login.html`);
             this.smarthome.last_code = this.random_string(8);
             this.smarthome.last_code_user = form["username"];
             this.smarthome.last_code_time = (new Date(Date.now())).getTime() / 1000;
@@ -157,7 +157,7 @@ class smarthome {
             log("[AUTH] Generate Code:", this.smarthome.last_code);
             res.status(301).redirect(args["redirect_uri"] + this.serialize(params));
           } else {
-            res.status(400).sendFile(`${this.smarthomePath}/400.html`);
+            res.status(400).sendFile(`${this.smarthomeWebsitePath}/400.html`);
           }
         })
 
@@ -326,7 +326,7 @@ class smarthome {
       this.smarthome.device.traits.push("action.devices.traits.Volume");
       this.smarthome.device.attributes.volumeMaxLevel = 100;
       this.smarthome.device.attributes.volumeCanMuteAndUnmute = true;
-      this.smarthome.device.attributes.volumeDefaultPercentage = this.smarthome.current.Volume; // to verify
+      this.smarthome.device.attributes.volumeDefaultPercentage = this.smarthome.current.Volume;
       this.smarthome.device.attributes.levelStepSize = 5;
     }
     if (this.smarthome.EXT["EXT-Pages"]) {
@@ -444,7 +444,7 @@ class smarthome {
   /** action on google **/
   actions () {
     this.smarthome.actions.onSync((body, headers) => {
-      log("[ACTIONS] [SYNC] Request:", JSON.stringify(body));
+      log("[ACTIONS] [SYNC] Request:", JSON.stringify(body), headers);
       let user_id = this.check_token(headers);
       if (!user_id) {
         console.error("[SMARTHOME] [ACTIONS] [SYNC] Error: user_id not found!");
@@ -630,7 +630,7 @@ class smarthome {
 
   /** Tools **/
   get_user (username, password) {
-    if ((username === this.smarthome.user.user) && (password === this.smarthome.user.password)) {
+    if ((username === this.smarthome.user.username) && (password === this.smarthome.user.password)) {
       return this.smarthome.user;
     } else {
       return null;
@@ -638,7 +638,7 @@ class smarthome {
   }
 
   get_userOnly (username) {
-    if (username === this.smarthome.user.user) {
+    if (username === this.smarthome.user.username) {
       return this.smarthome.user;
     } else {
       return null;
@@ -750,7 +750,7 @@ class smarthome {
     log("[HOMEGRAPH] [RequestSync] in Progress...");
     let body = {
       requestBody: {
-        agentUserId: this.smarthome.user.user,
+        agentUserId: this.smarthome.user.username,
         async: false
       }
     };
@@ -774,7 +774,7 @@ class smarthome {
     let query = {
       requestBody: {
         requestId: `GA-${Date.now()}`,
-        agentUserId: this.smarthome.user.user,
+        agentUserId: this.smarthome.user.username,
         inputs: [
           {
             payload: {
@@ -826,7 +826,7 @@ class smarthome {
 
       let body = {
         requestBody: {
-          agentUserId: this.smarthome.user.user,
+          agentUserId: this.smarthome.user.username,
           requestId: `GA-${Date.now()}`,
           payload: {
             devices: {
