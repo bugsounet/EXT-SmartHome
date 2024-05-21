@@ -25,19 +25,10 @@ Module.register("EXT-SmartHome", {
         this.ready = true;
         this.sendNotification("EXT_HELLO", this.name);
         break;
-      case "WEBSITE-INIT":
-        this.sendSocketNotification("SMARTHOME-INIT");
-        break;
       case "SendNoti":
         console.log("---> SendNoti:", payload);
         if (payload.payload && payload.noti) this.sendNotification(payload.noti, payload.payload);
         else this.sendNotification(payload);
-        break;
-      case "SYSINFO-RESULT":
-        this.sysInfo.updateSystemData(payload);
-        break;
-      case "TB_SYSINFO-RESULT":
-        this.show_sysinfo(payload);
         break;
     }
   },
@@ -47,15 +38,9 @@ Module.register("EXT-SmartHome", {
       case "GA_READY":
         if (sender.name === "MMM-GoogleAssistant") this.websiteInit();
         break;
-      case "EXT_DB":
-        this.EXT_DB = payload;
-        console.log("[WEBSITE] Received Database", this.EXT_DB);
-        break;
       case "EXT_STATUS":
+        console.log("[SMARTHOME] EXT_STATUS", payload);
         this.sendSocketNotification("EXT_STATUS", payload);
-        break;
-      case "EXT_WEBSITE-SYSINFO":
-        this.sysInfo.toggle();
         break;
     }
   },

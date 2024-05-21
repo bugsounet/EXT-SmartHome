@@ -1,7 +1,7 @@
-/******************************
-* node_helper for EXT-Website *
-* bugsounet ©05/24            *
-******************************/
+/********************************
+* node_helper for EXT-SmartHome *
+* bugsounet ©05/24              *
+********************************/
 
 "use strict";
 var log = (...args) => { /* do nothing */ };
@@ -19,20 +19,16 @@ module.exports = NodeHelper.create({
         this.config = payload;
         this.initialize();
         break;
-      case "SMARTHOME-INIT":
-        var smarthome = await this.parseSmarthome();
-        if (smarthome) await this.smarthome.init();
-        this.website.server();
-        this.sendSocketNotification("INITIALIZED");
-        break;
       case "EXT_STATUS":
-        console.log("Status",payload);
         if (this.smarthome) {
-          //this.smarthome.setEXTStatus(payload);
+          this.smarthome.setEXTStatus(payload);
           this.updateSmartHome();
         } else {
           // library is not loaded ... retry (not needed but...)
-          setTimeout(() => { this.socketNotificationReceived("EXT_STATUS", payload); }, 1000);
+          setTimeout(() => {
+            console.log("retry...");
+            this.socketNotificationReceived("EXT_STATUS", payload); 
+          }, 1000);
         }
         break;
     }
@@ -65,43 +61,10 @@ module.exports = NodeHelper.create({
     this.smarthome.createMiddleware();
   },
 
-  /*
-  async parseSmarthome () {
-    if (!this.config.CLIENT_ID) return false;
-    const bugsounet = await this.libraries("smarthome");
-    return new Promise((resolve) => {
-      if (bugsounet) return this.bugsounetError(bugsounet, "Smarthome");
-
-      let SmarthomeHelperConfig = {
-        config: {
-          username: this.config.username,
-          password: this.config.password,
-          CLIENT_ID: this.config.CLIENT_ID
-        },
-        debug: this.config.debug,
-        lang: config.language,
-        website: this.website
-      };
-
-      let smarthomeCallbacks = {
-        sendSocketNotification: (...args) => {
-          log("Smarthome callback:", ...args);
-          this.sendSocketNotification(...args);
-        },
-        restart: () => this.website.restartMM()
-      };
-
-      this.smarthome = new this.lib.smarthome(SmarthomeHelperConfig, smarthomeCallbacks);
-      resolve(true);
-    });
-  },
-*/
-
   updateSmartHome () {
-    if (!this.smarthome || !this.config.CLIENT_ID) return;
-    if (this.smarthome.SmartHome.use && this.smarthome.SmartHome.init) {
-      this.smarthome.refreshData();
-      this.smarthome.updateGraph();
+    if (this.smarthome.smarthome.use) {
+      if (this.smarthome.smarthome.initialized) this.smarthome.refreshData();
+      if (this.smarthome.smarthome.ready) this.smarthome.updateGraph();
     }
   },
 
