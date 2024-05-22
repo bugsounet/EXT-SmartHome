@@ -210,7 +210,7 @@ class smarthome {
 
     /** Create Server **/
     this.smarthome.server
-      .listen(8081, "0.0.0.0", () => {
+      .listen(8083, "0.0.0.0", () => {
         console.log("[SMARTHOME] Start listening on port 8083");
         this.smarthome.initialized = true;
         this.sendSocketNotification("INITIALIZED");
