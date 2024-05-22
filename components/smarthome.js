@@ -27,9 +27,10 @@ class smarthome {
       server: null,
       initialized: false, // server started
       ready: false, // homegraph ready
-      EXTStatus: {},
-      homegraph: null,
-      actions: null,
+      EXTStatus: {}, // status of all EXTs
+      EXT: {}, // EXTs compatible list for device
+      homegraph: null, // homegraph control
+      actions: null, // actions on google
       current: {}, // current status of smarthome
       old: {}, // old status of smarthome
       device: {}, // smarthome device
