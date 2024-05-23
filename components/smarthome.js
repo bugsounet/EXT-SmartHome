@@ -565,10 +565,14 @@ class smarthome {
         this.send("volumeMute", params.mute);
         return { status: "SUCCESS", states: { online: true, isMuted: params.mute, currentVolume: data.Volume } };
       case "action.devices.commands.SetInput":
-        var input = params.newInput.split(" ");
+        var input = params.newInput;
         if (input === "Stop") {
           this.send("Stop");
-          params.newInput = `page ${data.Page}`;
+          if (this.smarthome.EXT["EXT-Pages"]) {
+            params.newInput = `page ${data.Page}`;
+          } else {
+            params.newInput = "Stop"
+          }
         } else if (input === "EXT-FreeboxTV") {
           this.send("TVPlay");
           params.newInput = input;
@@ -580,7 +584,8 @@ class smarthome {
           if (!data.SpotifyIsPlaying) this.send("SpotifyPlay");
           params.newInput = input;
         } else {
-          this.send("setPage", input[1]);
+          var number = input.split(" ");
+          this.send("setPage", number[1]);
         }
         return { status: "SUCCESS", states: { online: true, currentInput: params.newInput } };
       case "action.devices.commands.NextInput":

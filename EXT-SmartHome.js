@@ -122,7 +122,6 @@ Module.register("EXT-SmartHome", {
         this.sendNotification("EXT_SPOTIFY-NEXT");
         break;
       case "CB_STOP":
-        this.notificationReceived("EXT_STOP");
         this.sendNotification("EXT_STOP");
         break;
       case "CB_TV-PLAY":
