@@ -215,12 +215,14 @@ class smarthome {
         console.log("[SMARTHOME] Start listening on port 8083");
         this.smarthome.initialized = true;
         this.sendSocketNotification("INITIALIZED");
-        log("Wait", this.waitBeforeInitDevice / 1000, "secs for Collecting EXTs...");
+        if (this.smarthome.use) {
+          log("Wait", this.waitBeforeInitDevice / 1000, "secs for Collecting EXTs...");
 
-        setTimeout(() => {
-          console.log("[SMARTHOME] Device Configuration...");
-          this.initDevice();
-        }, this.waitBeforeInitDevice);
+          setTimeout(() => {
+            console.log("[SMARTHOME] Device Configuration...");
+            this.initDevice();
+          }, this.waitBeforeInitDevice);
+        }
       })
       .on("error", (err) => {
         console.error("[SMARTHOME] Can't start web server!");
@@ -445,16 +447,20 @@ class smarthome {
   /** action on google **/
   actions () {
     this.smarthome.actions.onSync((body, headers) => {
-      log("[ACTIONS] [SYNC] Request:", JSON.stringify(body), headers);
+      log("[ACTIONS] [SYNC] Request:", JSON.stringify(body));
       let user_id = this.check_token(headers);
       if (!user_id) {
         console.error("[SMARTHOME] [ACTIONS] [SYNC] Error: user_id not found!");
-        return {}; // maybe return error ??
+        return {};
       }
       var result = {};
       result["requestId"] = body["requestId"];
       result["payload"] = { agentUserId: user_id, devices: [] };
       let user = this.get_userOnly(user_id);
+      if (!user) {
+        console.error(`[SMARTHOME] [ACTIONS] [SYNC] Error: This token is registred only for user: ${user_id}`);
+        return {};
+      }
       let device = this.get_device(user.devices[0], this.smarthome.device);
       result["payload"]["devices"].push(device);
       log("[ACTIONS] [SYNC] Send Result:", JSON.stringify(result));
@@ -466,7 +472,7 @@ class smarthome {
       let user_id = this.check_token(headers);
       if (!user_id) {
         console.error("[SMARTHOME] [ACTIONS] [EXECUTE] Error: user_id not found!");
-        return {}; // maybe return error ??
+        return {};
       }
       var result = {};
       result["payload"] = {};
@@ -487,7 +493,7 @@ class smarthome {
       let user_id = this.check_token(headers);
       if (!user_id) {
         console.error("[SMARTHOME] [ACTIONS] [QUERY] Error: user_id not found!");
-        return {}; // maybe return error ??
+        return {};
       }
       var result = {};
       result["payload"] = {};

@@ -26,7 +26,6 @@ Module.register("EXT-SmartHome", {
         this.sendNotification("EXT_HELLO", this.name);
         break;
       case "SendNoti":
-        console.log("---> SendNoti:", payload);
         if (payload.payload && payload.noti) this.sendNotification(payload.noti, payload.payload);
         else this.sendNotification(payload);
         break;
