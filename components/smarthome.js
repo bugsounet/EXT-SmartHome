@@ -211,7 +211,7 @@ class smarthome {
 
     /** Create Server **/
     this.smarthome.server
-      .listen(8083, "0.0.0.0", () => {
+      .listen(8083, "127.0.0.1", () => {
         console.log("[SMARTHOME] Start listening on port 8083");
         this.smarthome.initialized = true;
         this.sendSocketNotification("INITIALIZED");
@@ -225,13 +225,13 @@ class smarthome {
         }
       })
       .on("error", (err) => {
-        console.error("[SMARTHOME] Can't start web server!");
+        console.error("[SMARTHOME] Can't start SmartHome web server!");
         console.error("[SMARTHOME] Error:", err.message);
         this.sendSocketNotification("SendNoti", {
           noti: "EXT_ALERT",
           payload: {
             type: "error",
-            message: "Can't start web server!",
+            message: "Can't start SmartHome web server!",
             timer: 10000
           }
         });
