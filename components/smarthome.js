@@ -577,7 +577,7 @@ class smarthome {
           if (this.smarthome.EXT["EXT-Pages"]) {
             params.newInput = `page ${data.Page}`;
           } else {
-            params.newInput = "Stop"
+            params.newInput = "Stop";
           }
         } else if (input === "EXT-FreeboxTV") {
           this.send("TVPlay");
