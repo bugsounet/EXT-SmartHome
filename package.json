@@ -6,7 +6,7 @@
   "main": "EXT-SmartHome.js",
   "scripts": {
     "preinstall": "installer/preinstall.sh -d 'nginx certbot python3-certbot-nginx'",
-    "postinstall": "installer/postinstall.sh -b",
+    "postinstall": "installer/postinstall.sh -m",
     "update": "installer/update.sh",
     "rebuild": "installer/rebuild.sh",
     "reset": "git reset --hard",
@@ -28,7 +28,7 @@
     "EXT"
   ],
   "engines": {
-    "node": ">=18"
+    "node": ">=20"
   },
   "dependencies": {
     "@colors/colors": "^1.6.0",
@@ -44,7 +44,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^8.57.0",
-    "@stylistic/eslint-plugin": "^1.8.0",
+    "@stylistic/eslint-plugin": "^1.8.1",
     "eslint": "^8.57.0",
     "eslint-plugin-import": "^2.29.1"
   },
