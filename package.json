@@ -1,0 +1,61 @@
+{
+  "name": "EXT-SmartHome",
+  "version": "1.0.0",
+  "rev": "240701",
+  "description": "GA EXT-SmartHome Connect",
+  "main": "EXT-SmartHome.js",
+  "scripts": {
+    "preinstall": "installer/preinstall.sh -d 'nginx certbot python3-certbot-nginx'",
+    "postinstall": "installer/postinstall.sh -m",
+    "update": "installer/update.sh",
+    "rebuild": "installer/rebuild.sh",
+    "reset": "git reset --hard",
+    "clean": "rm -rf node_modules package-lock.json",
+    "smarthome": "sudo node installer/setup && npm run certbot",
+    "certbot": "sudo installer/certbot.sh",
+    "project": "installer/check_ProjectID.sh",
+    "lint": "eslint *.js installer/*.js components/*.js --config eslint.config.js",
+    "lint:fix": "eslint *.js installer/*.js components/*.js --config eslint.config.js --fix",
+    "test": "npm run lint",
+    "test:minify": "cd installer && node minify.js"
+  },
+  "keywords": [
+    "MMM-GoogleAssistant",
+    "magic mirror",
+    "module",
+    "interface",
+    "smart home",
+    "EXT"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@colors/colors": "^1.6.0",
+    "actions-on-google": "^3.0.0",
+    "body-parser": "^1.20.2",
+    "esbuild": "^0.21.5",
+    "glob": "^10.4.2",
+    "google-auth-library": "^9.11.0",
+    "googleapis": "^140.0.1",
+    "is-valid-domain": "^0.1.6",
+    "lodash": "^4.17.21",
+    "prompt": "^1.3.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^8.57.0",
+    "@stylistic/eslint-plugin": "^1.8.1",
+    "eslint": "^8.57.0",
+    "eslint-plugin-import": "^2.29.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bugsounet/EXT-SmartHome"
+  },
+  "author": "bugsounet",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://forum.bugsounet.fr/"
+  },
+  "homepage": "https://wiki.bugsounet.fr/en/EXT-SmartHome"
+}
