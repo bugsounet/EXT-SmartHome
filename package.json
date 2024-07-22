@@ -35,7 +35,7 @@
     "actions-on-google": "^3.0.0",
     "body-parser": "^1.20.2",
     "esbuild": "^0.23.0",
-    "glob": "^10.4.3",
+    "glob": "^10.4.5",
     "google-auth-library": "^9.11.0",
     "googleapis": "^140.0.1",
     "is-valid-domain": "^0.1.6",
