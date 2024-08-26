@@ -36,7 +36,7 @@
     "body-parser": "^1.20.2",
     "esbuild": "^0.23.1",
     "glob": "^10.4.5",
-    "google-auth-library": "^9.13.0",
+    "google-auth-library": "^9.14.0",
     "googleapis": "^142.0.0",
     "is-valid-domain": "^0.1.6",
     "lodash": "^4.17.21",
