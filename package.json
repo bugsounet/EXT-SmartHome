@@ -34,7 +34,7 @@
     "@colors/colors": "^1.6.0",
     "actions-on-google": "^3.0.0",
     "body-parser": "^1.20.3",
-    "esbuild": "^0.23.1",
+    "esbuild": "^0.24.0",
     "glob": "^10.4.5",
     "google-auth-library": "^9.14.1",
     "googleapis": "^144.0.0",
