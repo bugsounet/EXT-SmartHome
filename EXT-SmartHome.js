@@ -132,12 +132,6 @@ Module.register("EXT-SmartHome", {
       case "CB_TV-PREVIOUS":
         this.sendNotification("EXT_FREEBOXTV-PREVIOUS");
         break;
-      case "CB_SPOTIFY-LYRICS-ON":
-        this.sendNotification("EXT_SPOTIFY-SCL", true);
-        break;
-      case "CB_SPOTIFY-LYRICS-OFF":
-        this.sendNotification("EXT_SPOTIFY-SCL", false);
-        break;
     }
   }
 });

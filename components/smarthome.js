@@ -303,7 +303,6 @@ class smarthome {
       "EXT-Volume": Status["EXT-Volume"].hello,
       "EXT-Pages": Status["EXT-Pages"].hello,
       "EXT-Spotify": Status["EXT-Spotify"].hello,
-      "EXT-SpotifyCanvasLyrics": Status["EXT-SpotifyCanvasLyrics"].hello,
       "EXT-FreeboxTV": Status["EXT-FreeboxTV"].hello
     };
     this.smarthome.current.Screen = Status["EXT-Screen"].power;
@@ -314,10 +313,6 @@ class smarthome {
     this.smarthome.current.SpotifyIsConnected = Status["EXT-Spotify"].connected;
     this.smarthome.current.SpotifyIsPlaying = Status["EXT-Spotify"].play;
     this.smarthome.current.TvIsPlaying = Status["EXT-FreeboxTV"].connected;
-    this.smarthome.current.Lyrics = Status["EXT-SpotifyCanvasLyrics"].hello && (
-      Status["EXT-SpotifyCanvasLyrics"].connected ? Status["EXT-SpotifyCanvasLyrics"].connected : (this.smarthome.current.SpotifyIsConnected && this.smarthome.current.SpotifyIsPlaying)
-    );
-    this.smarthome.current.LyricsIsForced = Status["EXT-SpotifyCanvasLyrics"].forced;
 
     if (this.smarthome.EXT["EXT-Screen"]) {
       log("[DEVICE] Found: EXT-Screen (action.devices.traits.OnOff)");
@@ -396,20 +391,7 @@ class smarthome {
       };
       this.smarthome.device.attributes.availableInputs.push(FBTV);
     }
-    if (this.smarthome.EXT["EXT-SpotifyCanvasLyrics"]) {
-      log("[DEVICE] Found: EXT-SpotifyCanvasLyrics (action.devices.traits.Channel)");
-      this.smarthome.device.traits.push("action.devices.traits.Channel");
-      let SCL = {
-        key: "EXT-SpotifyCanvasLyrics",
-        names: [
-          {
-            lang: this.smarthome.lang,
-            name_synonym: ["EXT-SpotifyCanvasLyrics", "Lyrics", "Canvas"]
-          }
-        ]
-      };
-      this.smarthome.device.attributes.availableInputs.push(SCL);
-    }
+
     log("Your device is now:", this.smarthome.device);
     this.requestSync();
   }
@@ -424,9 +406,7 @@ class smarthome {
       MaxPages: this.smarthome.current.MaxPages,
       SpotifyIsConnected: this.smarthome.current.SpotifyIsConnected,
       SpotifyIsPlaying: this.smarthome.current.SpotifyIsPlaying,
-      TvIsPlaying: this.smarthome.current.TvIsPlaying,
-      Lyrics: this.smarthome.current.Lyrics,
-      LyricsIsForced: this.smarthome.current.LyricsIsForced
+      TvIsPlaying: this.smarthome.current.TvIsPlaying
     };
     this.smarthome.current.Screen = data["EXT-Screen"].power;
     this.smarthome.current.Volume = data["EXT-Volume"].speaker;
@@ -436,10 +416,6 @@ class smarthome {
     this.smarthome.current.SpotifyIsConnected = data["EXT-Spotify"].connected;
     this.smarthome.current.SpotifyIsPlaying = data["EXT-Spotify"].play;
     this.smarthome.current.TvIsPlaying = data["EXT-FreeboxTV"].connected;
-    this.smarthome.current.Lyrics = data["EXT-SpotifyCanvasLyrics"].hello && (
-      data["EXT-SpotifyCanvasLyrics"].connected ? data["EXT-SpotifyCanvasLyrics"].connected : (this.smarthome.current.SpotifyIsConnected && this.smarthome.current.SpotifyIsPlaying)
-    );
-    this.smarthome.current.LyricsIsForced = data["EXT-SpotifyCanvasLyrics"].forced;
   }
 
   /** action on google **/
@@ -531,8 +507,6 @@ class smarthome {
     }
     if (EXT["EXT-FreeboxTV"] && data.TvIsPlaying) {
       result.currentInput = "EXT-FreeboxTV";
-    } else if (EXT["EXT-SpotifyCanvasLyrics"] && data.Lyrics) {
-      result.currentInput = "EXT-SpotifyCanvasLyrics";
     } else if (EXT["EXT-Pages"]) {
       result.currentInput = `page ${data.Page}`;
     }
@@ -579,13 +553,6 @@ class smarthome {
           }
         } else if (input === "EXT-FreeboxTV") {
           this.send("TVPlay");
-          params.newInput = input;
-        } else if (input === "EXT-SpotifyCanvasLyrics") {
-          if (!data.LyricsIsForced && !data.Lyrics) this.send("SpotifyLyricsOn");
-          else if (data.LyricsIsForced) {
-            this.send("SpotifyLyricsOff");
-          }
-          if (!data.SpotifyIsPlaying) this.send("SpotifyPlay");
           params.newInput = input;
         } else {
           var number = input.split(" ");
@@ -825,8 +792,6 @@ class smarthome {
       }
       if (EXT["EXT-FreeboxTV"] && current.TvIsPlaying) {
         state.currentInput = "EXT-FreeboxTV";
-      } else if (EXT["EXT-SpotifyCanvasLyrics"] && current.Lyrics) {
-        state.currentInput = "EXT-SpotifyCanvasLyrics";
       } else if (EXT["EXT-Pages"]) {
         state.currentInput = `page ${current.Page}`;
       }
@@ -938,14 +903,6 @@ class smarthome {
       case "TVPrevious":
         log("[CALLBACK] Send TVPrevious");
         this.sendSocketNotification("CB_TV-PREVIOUS");
-        break;
-      case "SpotifyLyricsOn":
-        log("[CALLBACK] Send Lyrics on");
-        this.sendSocketNotification("CB_SPOTIFY-LYRICS-ON");
-        break;
-      case "SpotifyLyricsOff":
-        log("[CALLBACK] Send Lyrics off");
-        this.sendSocketNotification("CB_SPOTIFY-LYRICS-OFF");
         break;
       default:
         log("[CALLBACK] Unknow callback:", name);
