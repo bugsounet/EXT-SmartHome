@@ -8,9 +8,6 @@ This plugin allows to control MMM-GoogleAssistant from Google Home app from your
 
 This plugin need `EXT-Website` for working
 
-In addition, you can use some plugins:
- * `EXT-Alert` for display some information or error on your screen (Optional)
-
 # Installation / update / configuration
 
 Read the docs in [wiki](https://wiki.bugsounet.fr/EXT-SmartHome)
