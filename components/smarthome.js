@@ -228,7 +228,7 @@ class smarthome {
         console.error("[SMARTHOME] Can't start SmartHome web server!");
         console.error("[SMARTHOME] Error:", err.message);
         this.sendSocketNotification("SendNoti", {
-          noti: "EXT_ALERT",
+          noti: "GA_ALERT",
           payload: {
             type: "error",
             message: "Can't start SmartHome web server!",
@@ -302,7 +302,6 @@ class smarthome {
       "EXT-Screen": Status["EXT-Screen"].hello,
       "EXT-Volume": Status["EXT-Volume"].hello,
       "EXT-Pages": Status["EXT-Pages"].hello,
-      "EXT-Alert": Status["EXT-Alert"].hello,
       "EXT-Spotify": Status["EXT-Spotify"].hello,
       "EXT-SpotifyCanvasLyrics": Status["EXT-SpotifyCanvasLyrics"].hello,
       "EXT-FreeboxTV": Status["EXT-FreeboxTV"].hello
@@ -346,10 +345,9 @@ class smarthome {
         this.smarthome.device.attributes.availableInputs.push(input);
       }
     }
-    if (this.smarthome.EXT["EXT-Alert"]) {
-      log("[DEVICE] Found: EXT-Alert (action.devices.traits.Locator)");
-      this.smarthome.device.traits.push("action.devices.traits.Locator");
-    }
+
+    this.smarthome.device.traits.push("action.devices.traits.Locator");
+
     if (this.smarthome.EXT["EXT-Spotify"]) {
       log("[DEVICE] Found: EXT-Spotify (action.devices.traits.AppSelector, action.devices.traits.TransportControl)");
       this.smarthome.device.traits.push("action.devices.traits.AppSelector");
