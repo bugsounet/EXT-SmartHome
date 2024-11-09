@@ -87,21 +87,21 @@ Module.register("EXT-SmartHome", {
         this.sendNotification("EXT_PAGES-DECREMENT");
         break;
       case "CB_ALERT":
-        this.sendNotification("EXT_ALERT", {
+        this.sendNotification("GA_ALERT", {
           message: payload,
           type: "warning",
           timer: 10000
         });
         break;
       case "CB_DONE":
-        this.sendNotification("EXT_ALERT", {
+        this.sendNotification("GA_ALERT", {
           message: payload,
           type: "information",
           timer: 5000
         });
         break;
       case "CB_LOCATE":
-        this.sendNotification("EXT_ALERT", {
+        this.sendNotification("GA_ALERT", {
           message: "Hey, I'm here !",
           type: "information",
           sound: "modules/MMM-GoogleAssistant/website/tools/locator.mp3",
@@ -131,12 +131,6 @@ Module.register("EXT-SmartHome", {
         break;
       case "CB_TV-PREVIOUS":
         this.sendNotification("EXT_FREEBOXTV-PREVIOUS");
-        break;
-      case "CB_SPOTIFY-LYRICS-ON":
-        this.sendNotification("EXT_SPOTIFY-SCL", true);
-        break;
-      case "CB_SPOTIFY-LYRICS-OFF":
-        this.sendNotification("EXT_SPOTIFY-SCL", false);
         break;
     }
   }
