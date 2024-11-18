@@ -1,4 +1,3 @@
-
 const util = require("util");
 const exec = util.promisify(require("child_process").exec);
 
@@ -22,7 +21,7 @@ class Systemd {
       "StateChangeTimestamp"
     ].join(" -p ");
 
-    const { stdout, stderr } = await exec(command);
+    const { stdout } = await exec(command);
     return GetStdOutResponse(stdout, this.service);
   }
 
@@ -31,7 +30,7 @@ class Systemd {
     const command = `sudo systemctl restart ${this.service}`;
 
     try {
-      const { stdout, stderr } = await exec(command);
+      await exec(command);
     } catch (e) {
       let error = sliceLast(e.message, "\n");
       return {
@@ -50,7 +49,7 @@ class Systemd {
     const command = `sudo systemctl stop ${this.service}`;
 
     try {
-      const { stdout, stderr } = await exec(command);
+      await exec(command);
     } catch (e) {
       let error = sliceLast(e.message, "\n");
       return {
