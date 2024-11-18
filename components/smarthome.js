@@ -10,7 +10,7 @@ const googleapis = require("googleapis");
 const GoogleActions = require("actions-on-google");
 const _ = require("lodash");
 
-var log = (...args) => { /* do nothing */ };
+var log = () => { /* do nothing */ };
 
 class smarthome {
   constructor (config, cb = () => {}) {
@@ -73,7 +73,7 @@ class smarthome {
 
         try {
           content = JSON.parse(data);
-        } catch (e) {
+        } catch {
           console.error("[SMARTHOME] smarthome.json: corrupt!");
           this.send("Alert", "smarthome.json: corrupt!");
           resolve();
@@ -107,7 +107,6 @@ class smarthome {
     this.smarthome.actions = GoogleActions.smarthome();
     this.smarthome.app = express();
     this.smarthome.server = http.createServer(this.smarthome.app);
-    var urlencodedParser = bodyParser.urlencoded({ extended: true });
 
     this.smarthome.app.use(bodyParser.json());
     this.smarthome.app.use(bodyParser.urlencoded({ extended: true }));
@@ -732,7 +731,7 @@ class smarthome {
       }
     };
     try {
-      const res = await this.smarthome.homegraph.devices.requestSync(body);
+      await this.smarthome.homegraph.devices.requestSync(body);
       console.log("[SMARTHOME] smarthome Ready!");
       this.smarthome.ready = true;
     } catch (e) {
