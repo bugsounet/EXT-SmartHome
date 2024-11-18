@@ -4,7 +4,7 @@
 ********************************/
 
 "use strict";
-var log = (...args) => { /* do nothing */ };
+var log = () => { /* do nothing */ };
 const NodeHelper = require("node_helper");
 
 module.exports = NodeHelper.create({
@@ -27,7 +27,7 @@ module.exports = NodeHelper.create({
           // library is not loaded ... retry (not needed but...)
           setTimeout(() => {
             console.log("retry...");
-            this.socketNotificationReceived("EXT_STATUS", payload); 
+            this.socketNotificationReceived("EXT_STATUS", payload);
           }, 1000);
         }
         break;
@@ -71,9 +71,7 @@ module.exports = NodeHelper.create({
   libraries (type) {
     let Libraries = [];
 
-    let smarthome = [
-      { "./components/smarthome.js": "smarthome" }
-    ];
+    let smarthome = [{ "./components/smarthome.js": "smarthome" }];
     let errors = 0;
 
     switch (type) {

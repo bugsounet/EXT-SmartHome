@@ -4,7 +4,7 @@ const fs = require("node:fs");
 var prompt = require("prompt");
 var colors = require("@colors/colors/safe");
 const isValidDomain = require("is-valid-domain");
-const systemd = require("../components/systemd.js");
+const systemd = require("../components/systemd");
 
 const Systemd = new systemd("nginx");
 
@@ -38,7 +38,7 @@ async function main () {
 
 
 function promptDomain () {
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     prompt.message = "[SMARTHOME]";
     prompt.delimiter = colors.green("~");
     prompt.start();
@@ -66,7 +66,7 @@ function promptDomain () {
 function saveDomain () {
   return new Promise((resolve) => {
     console.log(`[SMARTHOME] ${colors.cyan("Writing your domain name: ")}${colors.blue(this.domain)}`);
-    fs.writeFile(`${__dirname}/DomainName`, this.domain, (err, data) => {
+    fs.writeFile(`${__dirname}/DomainName`, this.domain, (err) => {
       if (err) {
         console.error(`[SMARTHOME] ${colors.red(`Error:${err.message}`)}`);
         return process.exit(255);
@@ -83,7 +83,7 @@ function nginx () {
     console.log(`[SMARTHOME] ${colors.cyan("Your nginx server configuration will be:")}`);
     console.log(colors.blue(server), "\n");
     console.log(`[SMARTHOME] ${colors.cyan("Writing Gateway configuration file...")}`);
-    fs.writeFile("/etc/nginx/sites-available/Gateway", server, async (err, data) => {
+    fs.writeFile("/etc/nginx/sites-available/Gateway", server, async (err) => {
       if (err) {
         console.error(`[SMARTHOME] ${colors.red(`Error:${err.message}`)}`);
         return process.exit(1);
