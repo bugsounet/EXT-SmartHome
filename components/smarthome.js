@@ -864,8 +864,8 @@ class smarthome {
         this.sendSocketNotification("CB_DONE", values);
         break;
       case "Reboot":
-        log("[CALLBACK] Send Reboot");
-        setTimeout(() => this.restart(), 8000);
+        log("[CALLBACK] Send Restart");
+        setTimeout(() => this.sendSocketNotification("CB_RESTART"), 8000);
         break;
       case "Locate":
         log("[CALLBACK] Send Locate");
