@@ -104,7 +104,7 @@ Module.register("EXT-SmartHome", {
         this.sendNotification("GA_ALERT", {
           message: "Hey, I'm here !",
           type: "information",
-          sound: "modules/MMM-GoogleAssistant/website/tools/locator.mp3",
+          sound: "modules/EXT-Website/website/tools/locator.mp3",
           timer: 19000
         });
         break;
@@ -132,6 +132,8 @@ Module.register("EXT-SmartHome", {
       case "CB_TV-PREVIOUS":
         this.sendNotification("EXT_FREEBOXTV-PREVIOUS");
         break;
+      case "CB_RESTART":
+        this.sendNotification("EXT_GATEWAY-Restart");
     }
   }
 });
